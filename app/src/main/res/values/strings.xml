@@ -1,0 +1,11 @@
+<resources>
+  <string name="app_name">Netizen Trades</string>
+  <string name="email">Email</string>
+  <string name="password">Password</string>
+  <string name="logo">Logo</string>
+  <string name="login">Login</string>
+  <string name="copy">Copy</string>
+  <string name="wallet">wallet</string>
+  <string name="description_deposit">Manual Deposti Netizen Trande</string>
+  <string name="balance">Balance</string>
+</resources>
