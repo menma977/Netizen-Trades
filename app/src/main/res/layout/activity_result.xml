@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".view.ResultActivity">
+
+  <LinearLayout
+      android:orientation="vertical"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:background="@drawable/card_primary"
+        android:elevation="10dp"
+        android:layout_margin="20dp"
+        android:padding="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <TextView
+          android:text="Hasil Bot"
+          android:textSize="16sp"
+          android:textColor="@color/textPrimary"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <View
+          android:id="@+id/divider"
+          android:layout_width="match_parent"
+          android:layout_height="1dp"
+          android:background="@color/colorPrimary"/>
+
+      <TextView
+          android:text="@string/start_balance"
+          android:textSize="16sp"
+          android:gravity="center"
+          android:textColor="@color/textPrimary"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <TextView
+          android:text="@string/finish_balance"
+          android:textSize="16sp"
+          android:gravity="center"
+          android:textColor="@color/textPrimary"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <TextView
+          android:text="@string/win_lose"
+          android:textSize="16sp"
+          android:gravity="center"
+          android:textColor="@color/textPrimary"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <Space
+          android:layout_width="match_parent"
+          android:layout_height="10dp"/>
+
+      <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+        <Button
+            android:background="@drawable/button_primary"
+            android:textColor="@color/textSecondary"
+            android:text="@string/withdraw_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2"
+            android:layout_weight="1"/>
+
+        <Space
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"/>
+
+        <Button
+            android:background="@drawable/button_success"
+            android:textColor="@color/textSecondary"
+            android:text="@string/claim"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/button3"
+            android:layout_weight="1"/>
+      </LinearLayout>
+
+      <Space
+          android:layout_width="match_parent"
+          android:layout_height="10dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="@drawable/card_primary"
+        android:elevation="10dp"
+        android:layout_margin="20dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</ScrollView>

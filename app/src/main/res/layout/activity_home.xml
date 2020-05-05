@@ -79,6 +79,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/buttonCopy"
             android:layout_weight="0.1"/>
+
       </LinearLayout>
 
     </LinearLayout>
@@ -133,6 +134,19 @@
 
     </LinearLayout>
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
+    <Button
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/button_danger"
+        android:textColor="@color/textSecondary"
+        android:text="@string/bot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonBotMode"/>
 
     <Space
         android:layout_width="match_parent"
@@ -188,93 +202,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"/>
 
-            <TextView
-                android:text="@string/finish_balance"
-                android:gravity="center"
-                android:textColor="@color/textSecondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
-
-          </LinearLayout>
-
-          <Space
-              android:layout_width="match_parent"
-              android:layout_height="10dp"/>
-
-          <TextView
-              android:text="@string/win_lose"
-              android:gravity="center"
-              android:textColor="@color/textSecondary"
-              android:layout_width="wrap_content"
-              android:layout_height="0dp"
-              android:layout_weight="1"/>
-
-          <Space
-              android:layout_width="match_parent"
-              android:layout_height="10dp"/>
-
-          <LinearLayout
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-
-            <Button
-                android:layout_margin="8dp"
-                android:text="@string/withdraw_all"
-                android:background="@drawable/button_primary"
-                android:textColor="@color/textSecondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:elevation="10dp"
-                android:layout_weight="1"/>
-
             <Space
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.1"/>
-
-            <Button
-                android:layout_margin="8dp"
-                android:text="@string/claim"
-                android:background="@drawable/button_success"
-                android:textColor="@color/textSecondary"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:elevation="10dp"
-                android:layout_weight="1"/>
-
-          </LinearLayout>
-
-          <Space
-              android:layout_width="match_parent"
-              android:layout_height="10dp"/>
-
-        </LinearLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/colorSecondary"/>
-
-        <LinearLayout
-            android:gravity="center"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-          <LinearLayout
-              android:orientation="horizontal"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content">
-
-            <TextView
-                android:text="@string/start_balance"
-                android:gravity="center"
-                android:textColor="@color/textSecondary"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"/>
+                android:layout_weight="0.2"/>
 
             <TextView
                 android:text="@string/finish_balance"

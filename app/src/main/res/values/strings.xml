@@ -14,4 +14,7 @@
   <string name="withdraw_all">Withdraw All</string>
   <string name="claim">Claim</string>
   <string name="belum_di_clam">Belum Di Clam</string>
+  <string name="bot">Bot</string>
+  <string name="target_balance">Target Balance</string>
+  <string name="stop">Stop</string>
 </resources>
