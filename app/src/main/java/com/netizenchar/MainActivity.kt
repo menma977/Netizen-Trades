@@ -3,6 +3,10 @@ package com.netizenchar
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.netizenchar.model.SessionUser
+import com.netizenchar.view.HomeActivity
+import java.util.*
+import kotlin.concurrent.schedule
 
 class MainActivity : AppCompatActivity() {
   private lateinit var goTo:Intent
@@ -11,8 +15,19 @@ class MainActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_main)
 
-    goTo = Intent(this, LoginActivity::class.java)
-    startActivity(goTo)
-    finish()
+    Timer().schedule(100) {
+      runOnUiThread {
+        SessionUser(applicationContext).clear()
+        if (SessionUser(applicationContext).get("username").isEmpty()) {
+          goTo = Intent(applicationContext, LoginActivity::class.java)
+          finish()
+          startActivity(goTo)
+        } else {
+          goTo = Intent(applicationContext, HomeActivity::class.java)
+          finish()
+          startActivity(goTo)
+        }
+      }
+    }
   }
 }

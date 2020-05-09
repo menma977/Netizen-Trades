@@ -7,25 +7,46 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.netizenchar.R
+import com.netizenchar.config.Loading
+import com.netizenchar.controller.BalanceController
+import com.netizenchar.model.SessionUser
+import org.json.JSONObject
+import java.math.BigDecimal
+import java.text.DecimalFormat
+import java.util.*
+import kotlin.concurrent.schedule
 
 class HomeActivity : AppCompatActivity() {
-  private lateinit var wallet: TextView
-  private lateinit var copy: Button
-  private lateinit var bot:Button
-
   private lateinit var clipboardManager: ClipboardManager
   private lateinit var clipData: ClipData
   private lateinit var goTo: Intent
+  private lateinit var loading: Loading
+  private lateinit var sessionUser: SessionUser
+  private lateinit var response: JSONObject
+  private lateinit var balanceDoge: BigDecimal
 
+  private lateinit var wallet: TextView
+  private lateinit var balance: TextView
+  private lateinit var copy: Button
+  private lateinit var bot: Button
+  private lateinit var refreshBalance: LinearLayout
+  private var formatLot = DecimalFormat("#.#########")
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_home)
 
+    loading = Loading(this)
+    sessionUser = SessionUser(this)
     wallet = findViewById(R.id.textViewWallet)
+    balance = findViewById(R.id.textViewBalance)
     copy = findViewById(R.id.buttonCopy)
     bot = findViewById(R.id.buttonBotMode)
+    refreshBalance = findViewById(R.id.linearLayoutRefreshBalance)
+    loading.openDialog()
 
     copy.setOnClickListener {
       clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -33,9 +54,51 @@ class HomeActivity : AppCompatActivity() {
       clipboardManager.primaryClip = clipData
     }
 
+    refreshBalance.setOnClickListener {
+      getBalance()
+    }
+
     bot.setOnClickListener {
       goTo = Intent(this, BotActivity::class.java)
+      goTo.putExtra("balanceDoge", balanceDoge)
       startActivity(goTo)
+    }
+
+    getBalance()
+  }
+
+  override fun onStart() {
+    super.onStart()
+    getBalance()
+  }
+
+  private fun getBalance() {
+    loading.openDialog()
+    val body = HashMap<String, String>()
+    body["a"] = "GetBalance"
+    body["s"] = sessionUser.get("sessionCookie")
+    body["Currency"] = "doge"
+    body["Referrals"] = "0"
+    body["Stats"] = "0"
+    Timer().schedule(100) {
+      response = BalanceController(body).execute().get()
+      runOnUiThread {
+        if (response["code"] == 200) {
+          balanceDoge = response["response"].toString().toBigDecimal()
+          val formatBalance = formatLot.format(balanceDoge * BigDecimal(0.00000001))
+          balance.text = "DOGE : $formatBalance"
+          loading.closeDialog()
+        } else {
+          balance.text = "DOGE : ERROR. click here to refresh"
+          Toast.makeText(
+            applicationContext,
+            "your balance is not fully read. Please press the balance to refresh your balance",
+            Toast.LENGTH_LONG
+          ).show()
+          bot.isEnabled = false
+          loading.closeDialog()
+        }
+      }
     }
   }
 }

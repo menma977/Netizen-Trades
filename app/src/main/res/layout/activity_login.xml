@@ -43,7 +43,7 @@
           android:backgroundTint="@color/colorPrimaryLight"
           android:hint="@string/email"
           android:ems="10"
-          android:id="@+id/emailEditText"
+          android:id="@+id/editTextEmail"
           tools:ignore="Autofill"/>
 
       <Space
@@ -59,7 +59,7 @@
           android:backgroundTint="@color/colorPrimaryLight"
           android:hint="@string/password"
           android:ems="10"
-          android:id="@+id/passwordEditText"
+          android:id="@+id/editTextPassword"
           tools:ignore="Autofill,LabelFor"/>
 
       <Space
@@ -73,7 +73,7 @@
           android:layout_width="150dp"
           android:layout_height="wrap_content"
           android:elevation="10dp"
-          android:id="@+id/button"/>
+          android:id="@+id/buttonLogin"/>
 
 
     </LinearLayout>
