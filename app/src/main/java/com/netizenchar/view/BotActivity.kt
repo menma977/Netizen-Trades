@@ -31,6 +31,7 @@ class BotActivity : AppCompatActivity() {
   private lateinit var set: Set
   private lateinit var goTo: Intent
   private lateinit var balanceDoge: BigDecimal
+  private lateinit var balanceDogeLocal: BigDecimal
   private lateinit var loading: Loading
   private lateinit var response: JSONObject
   private lateinit var payIn: BigDecimal
@@ -52,7 +53,7 @@ class BotActivity : AppCompatActivity() {
   private var fibonacciJump = 0
   private var rowChart = 0
   private var maxChart = 30
-  private var targetBalanceValue = BigDecimal(0.5)
+  private var targetBalanceValue = BigDecimal(0.05)
 
   /**
    * todo: 3 jalur finish
@@ -120,9 +121,11 @@ class BotActivity : AppCompatActivity() {
   }
 
   private fun botMode() {
-    formatLot.format(balanceDoge * BigDecimal(0.001)).toBigDecimal()
-    payIn = balanceDoge * BigDecimal(0.001)
-    targetBalance.text = formatLot.format((balanceDoge + (balanceDoge * targetBalanceValue)) * BigDecimal(0.00000001))
+    balanceDogeLocal = balanceDoge
+    payIn = (balanceDoge * BigDecimal(0.00000001)) * BigDecimal(0.001)
+    val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
+    targetBalance.text =
+      formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
     val body = HashMap<String, String>()
     Timer().schedule(1000, 1000) {
       if (forcesStop) {
@@ -133,7 +136,7 @@ class BotActivity : AppCompatActivity() {
           if (fibonacciJump >= (fibonacciArray.size - 1)) {
             fibonacciJump = fibonacciArray.size - 1
           } else {
-            fibonacciJump += 3
+            fibonacciJump += 4
           }
         } else {
           if (fibonacciJump == 0) {
@@ -146,41 +149,40 @@ class BotActivity : AppCompatActivity() {
         body["s"] = sessionUser.get("sessionCookie")
         body["Low"] = "0"
         body["High"] = "940000"
-        body["PayIn"] = format.format((payIn * fibonacciArray[fibonacciJump].toBigDecimal()) * (100000000).toBigDecimal())
+        body["PayIn"] = format.format((payIn * fibonacciArray[fibonacciJump].toBigDecimal()) * BigDecimal(1000000000))
         body["ProtocolVersion"] = "2"
         body["ClientSeed"] = format.format((0..99999).random())
         body["Currency"] = "doge"
+        println(body)
         response = BotController(body).execute().get()
         runOnUiThread {
           try {
             if (response["code"] == 200) {
+              println(response)
               payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
-              profit = payOut - payIn
-              loseBot = profit < BigDecimal(0)
-              payIn = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal() + (payOut - payIn)
-              currencyBalance.text = formatLot.format((balanceDoge + profit) * BigDecimal(0.00000001))
-              if (currencyBalance.text.toString().toBigDecimal() > (balanceDoge + (balanceDoge * targetBalanceValue))) {
+              balanceDogeLocal = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
+              profit = payOut - (payIn * BigDecimal(1000000000))
+              loseBot = (profit) < BigDecimal(0)
+              balanceDogeLocal += profit
+              botValue.put("value", currencyBalance.text.toString())
+              set.append(botValue.toString())
+              payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.001)
+              currencyBalance.text = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
+              if (currencyBalance.text.toString().toBigDecimal() > targetBalance.text.toString().toBigDecimal()) {
                 this.cancel()
               }
               if (rowChart >= maxChart) {
                 set.remove(0)
               }
-
-              if (rowChart == 2) {
-                this.cancel()
-              }
+//              if (rowChart == 99) {
+//                this.cancel()
+//              }
               rowChart++
-              botValue.put(
-                "value",
-                formatLot.format((balanceDoge + profit) * BigDecimal(0.00000001))
-              )
-              set.append(botValue.toString())
             } else {
               Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_SHORT).show()
               this.cancel()
             }
           } catch (e: Exception) {
-            e.printStackTrace()
             Toast.makeText(applicationContext, "Invalid request", Toast.LENGTH_SHORT).show()
             this.cancel()
           }
