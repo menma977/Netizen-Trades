@@ -41,50 +41,26 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-      <LinearLayout
-          android:orientation="horizontal"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
-
-        <TextView
-            android:textColor="@color/textPrimary"
-            android:gravity="center"
-            android:text="@string/balance"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/textViewBalance"/>
-
-        <TextView
-            android:textColor="@color/textPrimary"
-            android:gravity="center"
-            android:text="@string/target_balance"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:id="@+id/textViewTargetBalance"/>
-
-      </LinearLayout>
-
       <TextView
           android:textColor="@color/textPrimary"
           android:gravity="center"
-          android:text="@string/current_balance"
+          android:text="@string/balance"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:id="@+id/textViewCurrentBalance"/>
+          android:id="@+id/textViewBalance"/>
 
       <Space
           android:layout_width="match_parent"
           android:layout_height="10dp"/>
 
-      <Button
-          android:background="@drawable/button_danger"
-          android:textColor="@color/textSecondary"
-          android:text="@string/stop"
+      <ProgressBar
+          style="?android:attr/progressBarStyleHorizontal"
           android:layout_width="match_parent"
-          android:layout_height="wrap_content"
-          android:id="@+id/buttonStop"/>
+          android:layout_height="20dp"
+          android:id="@+id/progressBar"
+          android:progressDrawable="@drawable/progress_bar"
+          />
+
 
     </LinearLayout>
 
@@ -95,7 +71,7 @@
     <com.anychart.AnyChartView
         android:id="@+id/chart"
         android:layout_width="match_parent"
-        android:layout_height="200dp"/>
+        android:layout_height="250dp"/>
 
     <Space
         android:layout_width="match_parent"

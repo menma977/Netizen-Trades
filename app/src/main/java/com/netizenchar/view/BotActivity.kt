@@ -3,7 +3,7 @@ package com.netizenchar.view
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import com.anychart.AnyChart
@@ -32,6 +32,8 @@ class BotActivity : AppCompatActivity() {
   private lateinit var goTo: Intent
   private lateinit var balanceDoge: BigDecimal
   private lateinit var balanceDogeLocal: BigDecimal
+  private lateinit var balanceTargetDogeLocal: String
+  private lateinit var balanceRemainingDogeLocal: String
   private lateinit var loading: Loading
   private lateinit var response: JSONObject
   private lateinit var payIn: BigDecimal
@@ -39,17 +41,14 @@ class BotActivity : AppCompatActivity() {
   private lateinit var profit: BigDecimal
   private lateinit var botValue: JSONObject
   private lateinit var sessionUser: SessionUser
-
   private lateinit var balance: TextView
-  private lateinit var targetBalance: TextView
-  private lateinit var currencyBalance: TextView
-  private lateinit var stop: Button
+  private lateinit var progressBar: ProgressBar
 
   private var fibonacciArray = ArrayList<Int>()
   private var format = DecimalFormat("#")
   private var formatLot = DecimalFormat("#.#########")
-  private var forcesStop = false
   private var loseBot = false
+  private var stop = false
   private var fibonacciJump = 0
   private var rowChart = 0
   private var maxChart = 30
@@ -59,11 +58,6 @@ class BotActivity : AppCompatActivity() {
    * todo: 3 jalur finish
    * 1. balance mencapai 5%
    * 2. stop paksa
-   *
-   * todo: rumus
-   * low : 0
-   * high : 940000
-   * payIn : 0.1% dari balance
    */
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,10 +69,8 @@ class BotActivity : AppCompatActivity() {
     botValue = JSONObject()
     balanceDoge = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
     balance = findViewById(R.id.textViewBalance)
-    targetBalance = findViewById(R.id.textViewTargetBalance)
-    currencyBalance = findViewById(R.id.textViewCurrentBalance)
-    stop = findViewById(R.id.buttonStop)
     anyChartView = findViewById(R.id.chart)
+    progressBar = findViewById(R.id.progressBar)
     cartesian = AnyChart.line()
     cartesian.background().fill("#ffffff")
     configChart()
@@ -86,21 +78,19 @@ class BotActivity : AppCompatActivity() {
     loading.openDialog()
 
     balance.text = formatLot.format(balanceDoge * BigDecimal(0.00000001))
-
-    stop.setOnClickListener {
-      forcesStop = true
-      goTo = Intent(this, ResultActivity::class.java)
-      finish()
-      startActivity(goTo)
-    }
-
-    botValue.put("value", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
-    set.append(botValue.toString())
+    progressBar.min = 0
+    progressBar.progress = 0
+    progressBar.max = 100
 
     setValueFibonacci()
     botMode()
 
     loading.closeDialog()
+  }
+
+  override fun onBackPressed() {
+    super.onBackPressed()
+    stop = true
   }
 
   private fun configChart() {
@@ -118,33 +108,20 @@ class BotActivity : AppCompatActivity() {
     cartesian.legend().enabled(true)
     cartesian.legend().fontSize(13.0)
     cartesian.legend().padding(0.0)
+    cartesian.yAxis(false)
+    cartesian.xAxis(false)
   }
 
   private fun botMode() {
     balanceDogeLocal = balanceDoge
     payIn = (balanceDoge * BigDecimal(0.00000001)) * BigDecimal(0.001)
     val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
-    targetBalance.text =
-      formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
+    balanceTargetDogeLocal = formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
     val body = HashMap<String, String>()
-    Timer().schedule(1000, 1000) {
-      if (forcesStop) {
+    Timer().schedule(1000, 2000) {
+      if (stop) {
         this.cancel()
-        loading.closeDialog()
       } else {
-        if (loseBot) {
-          if (fibonacciJump >= (fibonacciArray.size - 1)) {
-            fibonacciJump = fibonacciArray.size - 1
-          } else {
-            fibonacciJump += 4
-          }
-        } else {
-          if (fibonacciJump == 0) {
-            fibonacciJump = 0
-          } else {
-            fibonacciJump -= 1
-          }
-        }
         body["a"] = "PlaceBet"
         body["s"] = sessionUser.get("sessionCookie")
         body["Low"] = "0"
@@ -153,38 +130,65 @@ class BotActivity : AppCompatActivity() {
         body["ProtocolVersion"] = "2"
         body["ClientSeed"] = format.format((0..99999).random())
         body["Currency"] = "doge"
-        println(body)
         response = BotController(body).execute().get()
         runOnUiThread {
           try {
             if (response["code"] == 200) {
-              println(response)
               payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
               balanceDogeLocal = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
               profit = payOut - (payIn * BigDecimal(1000000000))
               loseBot = (profit) < BigDecimal(0)
-              balanceDogeLocal += profit
-              botValue.put("value", currencyBalance.text.toString())
-              set.append(botValue.toString())
               payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.001)
-              currencyBalance.text = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
-              if (currencyBalance.text.toString().toBigDecimal() > targetBalance.text.toString().toBigDecimal()) {
+              balanceRemainingDogeLocal = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
+              progress(
+                balanceDoge * BigDecimal(0.00000001),
+                balanceRemainingDogeLocal.toBigDecimal(),
+                balanceTargetDogeLocal.toBigDecimal()
+              )
+              if (loseBot) {
+                if (fibonacciJump >= (fibonacciArray.size - 1)) {
+                  fibonacciJump = fibonacciArray.size - 1
+                } else {
+                  fibonacciJump += 4
+                }
+              } else {
+                if (fibonacciJump == 0) {
+                  fibonacciJump = 0
+                } else {
+                  fibonacciJump -= 1
+                }
+              }
+              if (balanceRemainingDogeLocal.toBigDecimal() > balanceTargetDogeLocal.toBigDecimal()) {
                 this.cancel()
+                goTo = Intent(applicationContext, ResultActivity::class.java)
+                goTo.putExtra("win", true)
+                goTo.putExtra("status", "WIN")
+                finish()
+                startActivity(goTo)
               }
               if (rowChart >= maxChart) {
                 set.remove(0)
               }
-//              if (rowChart == 99) {
-//                this.cancel()
-//              }
               rowChart++
+              botValue.put("value", balanceRemainingDogeLocal)
+              set.append(botValue.toString())
             } else {
               Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_SHORT).show()
               this.cancel()
+              goTo = Intent(applicationContext, ResultActivity::class.java)
+              goTo.putExtra("win", false)
+              goTo.putExtra("status", "lost Connection")
+              finish()
+              startActivity(goTo)
             }
           } catch (e: Exception) {
-            Toast.makeText(applicationContext, "Invalid request", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Lost", Toast.LENGTH_SHORT).show()
             this.cancel()
+            goTo = Intent(applicationContext, ResultActivity::class.java)
+            goTo.putExtra("win", false)
+            goTo.putExtra("status", "lost")
+            finish()
+            startActivity(goTo)
           }
         }
       }
@@ -221,5 +225,14 @@ class BotActivity : AppCompatActivity() {
     fibonacciArray.add(196418)
     fibonacciArray.add(317811)
     fibonacciArray.add(514229)
+  }
+
+  private fun progress(start: BigDecimal, remaining: BigDecimal, end: BigDecimal) {
+    val startLocal = (start * BigDecimal(100000)).toInt()
+    val remainingLocal = (remaining * BigDecimal(100000)).toInt()
+    val endLocal = (end * BigDecimal(100000)).toInt()
+    progressBar.min = startLocal
+    progressBar.max = endLocal
+    progressBar.progress = remainingLocal
   }
 }
