@@ -4,15 +4,18 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import com.netizenchar.MainActivity
 import com.netizenchar.R
 import com.netizenchar.config.Loading
+import com.netizenchar.config.MD5
 import com.netizenchar.controller.BalanceController
+import com.netizenchar.controller.DataWebController
 import com.netizenchar.model.SessionUser
 import org.json.JSONObject
 import java.math.BigDecimal
@@ -28,6 +31,7 @@ class HomeActivity : AppCompatActivity() {
   private lateinit var sessionUser: SessionUser
   private lateinit var response: JSONObject
   private lateinit var balanceDoge: BigDecimal
+  private lateinit var logout: Button
 
   private lateinit var wallet: TextView
   private lateinit var balance: TextView
@@ -45,8 +49,11 @@ class HomeActivity : AppCompatActivity() {
     balance = findViewById(R.id.textViewBalance)
     copy = findViewById(R.id.buttonCopy)
     bot = findViewById(R.id.buttonBotMode)
+    logout = findViewById(R.id.logoutButton)
     refreshBalance = findViewById(R.id.linearLayoutRefreshBalance)
     loading.openDialog()
+
+    wallet.text = sessionUser.get("wallet")
 
     copy.setOnClickListener {
       clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
@@ -58,10 +65,57 @@ class HomeActivity : AppCompatActivity() {
       getBalance()
     }
 
+    logout.setOnClickListener {
+      loading.openDialog()
+      sessionUser.clear()
+      Timer().schedule(1000) {
+        goTo = Intent(applicationContext, MainActivity::class.java)
+        startActivity(goTo)
+        loading.closeDialog()
+        finishAffinity()
+      }
+    }
+
     bot.setOnClickListener {
-      goTo = Intent(this, BotActivity::class.java)
-      goTo.putExtra("balanceDoge", balanceDoge)
-      startActivity(goTo)
+      val uniqueCode = UUID.randomUUID().toString()
+      loading.openDialog()
+      val body = HashMap<String, String>()
+      body["a"] = "StartTrading"
+      body["usertrade"] = sessionUser.get("username")
+      body["passwordtrade"] = sessionUser.get("password")
+      body["notrx"] = uniqueCode
+      body["balanceawal"] = formatLot.format(balanceDoge * BigDecimal(0.00000001))
+      body["ref"] =
+        MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
+      Timer().schedule(100) {
+        response = DataWebController.StartTrade(body).execute().get()
+        println(response)
+        runOnUiThread {
+          if (response["code"] == 200) {
+            if (response.getJSONObject("response")["Status"] == "0") {
+              goTo = Intent(applicationContext, BotActivity::class.java)
+              goTo.putExtra("uniqueCode", uniqueCode)
+              goTo.putExtra("balanceDoge", balanceDoge)
+              loading.closeDialog()
+              startActivity(goTo)
+            } else {
+              Toast.makeText(
+                applicationContext,
+                "You can't play anymore",
+                Toast.LENGTH_LONG
+              ).show()
+              loading.closeDialog()
+            }
+          } else {
+            Toast.makeText(
+              applicationContext,
+              "your connection is lost",
+              Toast.LENGTH_LONG
+            ).show()
+            loading.closeDialog()
+          }
+        }
+      }
     }
 
     getBalance()

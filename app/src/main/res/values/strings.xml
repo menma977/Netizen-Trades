@@ -8,9 +8,9 @@
   <string name="wallet">wallet</string>
   <string name="description_deposit">Manual Deposti Netizen Trande</string>
   <string name="balance">Balance</string>
-  <string name="start_balance">Start Balance: 00000.00000000</string>
-  <string name="finish_balance">Finish Balance: 0000.00000000</string>
-  <string name="win_lose">Win/Lose: 0000.00000000</string>
+  <string name="start_balance">Start Balance:</string>
+  <string name="finish_balance">Finish Balance:</string>
+  <string name="win_lose">Win/Lose:</string>
   <string name="withdraw_all">Withdraw All</string>
   <string name="claim">Claim</string>
   <string name="belum_di_clam">Belum Di Clam</string>

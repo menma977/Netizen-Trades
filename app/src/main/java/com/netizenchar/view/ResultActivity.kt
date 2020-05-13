@@ -1,8 +1,16 @@
 package com.netizenchar.view
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
+import android.widget.TextView
 import com.netizenchar.R
+import com.netizenchar.config.Loading
+import com.netizenchar.config.MD5
+import com.netizenchar.controller.DataWebController
+import com.netizenchar.model.SessionUser
+import org.json.JSONObject
+import java.util.*
+import kotlin.concurrent.schedule
 
 /**
  * todo:preset Data result
@@ -17,14 +25,54 @@ import com.netizenchar.R
  * send api(balance akir - balance awal) : kalah.php
  */
 class ResultActivity : AppCompatActivity() {
+  private lateinit var loading: Loading
+  private lateinit var sessionUser: SessionUser
+  private lateinit var response: JSONObject
+  private lateinit var start: TextView
+  private lateinit var finish: TextView
+  private lateinit var statusView: TextView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_result)
+
+    loading = Loading(this)
+    sessionUser = SessionUser(this)
+    start = findViewById(R.id.startTextView)
+    finish = findViewById(R.id.finishTextView)
+    statusView = findViewById(R.id.statusTextView)
+    loading.openDialog()
+
+    val startBalance = intent.getSerializableExtra("startBalance").toString()
+    val endBalance = intent.getSerializableExtra("endBalance").toString()
+    val status = intent.getSerializableExtra("status").toString()
+    val uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
+    endTrade(uniqueCode, status, startBalance, endBalance)
   }
 
   override fun onBackPressed() {
     super.onBackPressed()
     finish()
+  }
+
+  private fun endTrade(uniqueCode: String, status: String, startBalance: String, endBalance: String) {
+    val body = HashMap<String, String>()
+    body["a"] = "EndTrading"
+    body["usertrade"] = sessionUser.get("username")
+    body["passwordtrade"] = sessionUser.get("password")
+    body["notrx"] = uniqueCode
+    body["status"] = status
+    body["balanceakhir"] = endBalance
+    body["ref"] =
+      MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + status + "balanceakhirb0d0nk111179")
+    Timer().schedule(100) {
+      response = DataWebController.EndTrade(body).execute().get()
+      runOnUiThread {
+        start.text = startBalance
+        finish.text = endBalance
+        statusView.text = status
+        loading.closeDialog()
+      }
+    }
   }
 }

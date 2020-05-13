@@ -1,22 +1,20 @@
 package com.netizenchar.view
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
-import com.anychart.AnyChart
-import com.anychart.AnyChartView
-import com.anychart.charts.Cartesian
-import com.anychart.core.cartesian.series.Line
-import com.anychart.data.Mapping
-import com.anychart.data.Set
-import com.anychart.enums.TooltipPositionMode
+import com.netizenchar.MainActivity
 import com.netizenchar.R
 import com.netizenchar.config.Loading
 import com.netizenchar.controller.BotController
 import com.netizenchar.model.SessionUser
+import org.eazegraph.lib.charts.ValueLineChart
+import org.eazegraph.lib.models.ValueLinePoint
+import org.eazegraph.lib.models.ValueLineSeries
 import org.json.JSONObject
 import java.math.BigDecimal
 import java.text.DecimalFormat
@@ -25,10 +23,8 @@ import kotlin.collections.HashMap
 import kotlin.concurrent.schedule
 
 class BotActivity : AppCompatActivity() {
-
-  private lateinit var anyChartView: AnyChartView
-  private lateinit var cartesian: Cartesian
-  private lateinit var set: Set
+  private lateinit var cubicLineChart: ValueLineChart
+  private lateinit var series: ValueLineSeries
   private lateinit var goTo: Intent
   private lateinit var balanceDoge: BigDecimal
   private lateinit var balanceDogeLocal: BigDecimal
@@ -39,7 +35,6 @@ class BotActivity : AppCompatActivity() {
   private lateinit var payIn: BigDecimal
   private lateinit var payOut: BigDecimal
   private lateinit var profit: BigDecimal
-  private lateinit var botValue: JSONObject
   private lateinit var sessionUser: SessionUser
   private lateinit var balance: TextView
   private lateinit var progressBar: ProgressBar
@@ -51,8 +46,8 @@ class BotActivity : AppCompatActivity() {
   private var stop = false
   private var fibonacciJump = 0
   private var rowChart = 0
-  private var maxChart = 30
   private var targetBalanceValue = BigDecimal(0.05)
+  private var uniqueCode = ""
 
   /**
    * todo: 3 jalur finish
@@ -64,24 +59,24 @@ class BotActivity : AppCompatActivity() {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_bot)
 
+    uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
+
+    cubicLineChart = findViewById(R.id.cubicLineChart)
+    series = ValueLineSeries()
+
     loading = Loading(this)
     sessionUser = SessionUser(this)
-    botValue = JSONObject()
     balanceDoge = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
     balance = findViewById(R.id.textViewBalance)
-    anyChartView = findViewById(R.id.chart)
     progressBar = findViewById(R.id.progressBar)
-    cartesian = AnyChart.line()
-    cartesian.background().fill("#ffffff")
-    configChart()
-    anyChartView.setChart(cartesian)
     loading.openDialog()
 
-    balance.text = formatLot.format(balanceDoge * BigDecimal(0.00000001))
+    balance.text = "Start Balance : " + formatLot.format(balanceDoge * BigDecimal(0.00000001))
     progressBar.min = 0
     progressBar.progress = 0
     progressBar.max = 100
 
+    configChart()
     setValueFibonacci()
     botMode()
 
@@ -94,22 +89,12 @@ class BotActivity : AppCompatActivity() {
   }
 
   private fun configChart() {
-    cartesian.crosshair().enabled(true)
-    cartesian.tooltip().positionMode(TooltipPositionMode.POINT)
-
-    set = Set.instantiate()
-    val series1Mapping: Mapping = set.mapAs("{ value: 'value' }")
-
-    val series1: Line = cartesian.line(series1Mapping)
-    series1.name("Balance")
-    series1.hovered().markers().enabled(true)
-    series1.stroke("#fd0001")
-
-    cartesian.legend().enabled(true)
-    cartesian.legend().fontSize(13.0)
-    cartesian.legend().padding(0.0)
-    cartesian.yAxis(false)
-    cartesian.xAxis(false)
+    series.color = Color.RED
+    cubicLineChart.axisTextColor = Color.WHITE
+    cubicLineChart.containsPoints()
+    cubicLineChart.isUseDynamicScaling = true
+    cubicLineChart.addSeries(series)
+    cubicLineChart.startAnimation()
   }
 
   private fun botMode() {
@@ -118,7 +103,7 @@ class BotActivity : AppCompatActivity() {
     val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
     balanceTargetDogeLocal = formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
     val body = HashMap<String, String>()
-    Timer().schedule(1000, 2000) {
+    Timer().schedule(1000, 1000) {
       if (stop) {
         this.cancel()
       } else {
@@ -133,62 +118,91 @@ class BotActivity : AppCompatActivity() {
         response = BotController(body).execute().get()
         runOnUiThread {
           try {
-            if (response["code"] == 200) {
-              payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
-              balanceDogeLocal = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
-              profit = payOut - (payIn * BigDecimal(1000000000))
-              loseBot = (profit) < BigDecimal(0)
-              payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.001)
-              balanceRemainingDogeLocal = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
-              progress(
-                balanceDoge * BigDecimal(0.00000001),
-                balanceRemainingDogeLocal.toBigDecimal(),
-                balanceTargetDogeLocal.toBigDecimal()
-              )
-              if (loseBot) {
-                if (fibonacciJump >= (fibonacciArray.size - 1)) {
-                  fibonacciJump = fibonacciArray.size - 1
+            when {
+              response["code"] == 200 -> {
+                payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
+                balanceDogeLocal = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
+                profit = payOut - (payIn * BigDecimal(1000000000))
+                loseBot = (profit) < BigDecimal(0)
+                payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.001)
+                balanceRemainingDogeLocal = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
+                progress(
+                  balanceDoge * BigDecimal(0.00000001),
+                  balanceRemainingDogeLocal.toBigDecimal(),
+                  balanceTargetDogeLocal.toBigDecimal()
+                )
+                if (loseBot) {
+                  if (fibonacciJump >= (fibonacciArray.size - 1)) {
+                    fibonacciJump = fibonacciArray.size - 1
+                  } else {
+                    fibonacciJump += 4
+                  }
                 } else {
-                  fibonacciJump += 4
+                  if (fibonacciJump == 0) {
+                    fibonacciJump = 0
+                  } else {
+                    fibonacciJump -= 1
+                  }
                 }
-              } else {
-                if (fibonacciJump == 0) {
-                  fibonacciJump = 0
-                } else {
-                  fibonacciJump -= 1
+                if (balanceRemainingDogeLocal.toBigDecimal() > balanceTargetDogeLocal.toBigDecimal()) {
+                  this.cancel()
+                  Timer().schedule(1000) {
+                    runOnUiThread {
+                      goTo = Intent(applicationContext, ResultActivity::class.java)
+                      goTo.putExtra("startBalance", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
+                      goTo.putExtra("endBalance", balanceRemainingDogeLocal)
+                      goTo.putExtra("status", "WIN")
+                      goTo.putExtra("uniqueCode", uniqueCode)
+                      startActivity(goTo)
+                      finish()
+                    }
+                  }
+                } else if (balanceRemainingDogeLocal.toBigDecimal() <= BigDecimal(0)) {
+                  this.cancel()
+                  Timer().schedule(1000) {
+                    runOnUiThread {
+                      goTo = Intent(applicationContext, ResultActivity::class.java)
+                      goTo.putExtra("startBalance", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
+                      goTo.putExtra("endBalance", balanceRemainingDogeLocal)
+                      goTo.putExtra("status", "LOSS")
+                      goTo.putExtra("uniqueCode", uniqueCode)
+                      startActivity(goTo)
+                      finish()
+                    }
+                  }
                 }
+                series.addPoint(ValueLinePoint("$rowChart", balanceRemainingDogeLocal.toFloat()))
+                cubicLineChart.addSeries(series)
+                cubicLineChart.refreshDrawableState()
+                rowChart++
               }
-              if (balanceRemainingDogeLocal.toBigDecimal() > balanceTargetDogeLocal.toBigDecimal()) {
+              response["code"] == 404 -> {
+                Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
                 this.cancel()
                 goTo = Intent(applicationContext, ResultActivity::class.java)
-                goTo.putExtra("win", true)
-                goTo.putExtra("status", "WIN")
-                finish()
+                goTo.putExtra("startBalance", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
+                goTo.putExtra("endBalance", balanceRemainingDogeLocal)
+                goTo.putExtra("status", "LOSS")
+                goTo.putExtra("uniqueCode", uniqueCode)
                 startActivity(goTo)
+                finish()
               }
-              if (rowChart >= maxChart) {
-                set.remove(0)
+              else -> {
+                Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
+                this.cancel()
+                sessionUser.clear()
+                goTo = Intent(applicationContext, MainActivity::class.java)
+                startActivity(goTo)
+                finish()
               }
-              rowChart++
-              botValue.put("value", balanceRemainingDogeLocal)
-              set.append(botValue.toString())
-            } else {
-              Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_SHORT).show()
-              this.cancel()
-              goTo = Intent(applicationContext, ResultActivity::class.java)
-              goTo.putExtra("win", false)
-              goTo.putExtra("status", "lost Connection")
-              finish()
-              startActivity(goTo)
             }
           } catch (e: Exception) {
-            Toast.makeText(applicationContext, "Lost", Toast.LENGTH_SHORT).show()
+            Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
             this.cancel()
-            goTo = Intent(applicationContext, ResultActivity::class.java)
-            goTo.putExtra("win", false)
-            goTo.putExtra("status", "lost")
-            finish()
+            sessionUser.clear()
+            goTo = Intent(applicationContext, MainActivity::class.java)
             startActivity(goTo)
+            finish()
           }
         }
       }

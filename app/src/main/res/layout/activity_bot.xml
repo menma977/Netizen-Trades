@@ -43,7 +43,7 @@
 
       <TextView
           android:textColor="@color/textPrimary"
-          android:gravity="center"
+          android:gravity="start"
           android:text="@string/balance"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
@@ -68,10 +68,14 @@
         android:layout_width="match_parent"
         android:layout_height="10dp"/>
 
-    <com.anychart.AnyChartView
-        android:id="@+id/chart"
+    <org.eazegraph.lib.charts.ValueLineChart
+        android:id="@+id/cubicLineChart"
         android:layout_width="match_parent"
-        android:layout_height="250dp"/>
+        android:layout_height="300dp"
+        app:egUseCubic="true"
+        app:egUseOverlapFill="true"
+        app:egCurveSmoothness="0.4"
+        app:egLegendHeight="40dp"/>
 
     <Space
         android:layout_width="match_parent"

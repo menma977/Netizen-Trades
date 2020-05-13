@@ -16,6 +16,20 @@
         android:layout_width="match_parent"
         android:layout_height="25dp"/>
 
+    <Button
+        android:layout_margin="10dp"
+        android:layout_gravity="end"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/logoutButton"
+        android:background="@drawable/button_danger"
+        android:foreground="@drawable/ic_power_settings"
+        android:foregroundTint="@color/colorSecondary"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="200dp"

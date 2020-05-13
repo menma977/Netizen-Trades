@@ -13,8 +13,8 @@ import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.InputStreamReader
 
-class LoginController {
-  class Web(private var body: HashMap<String, String>) : AsyncTask<Void, Void, JSONObject>() {
+class DataWebController {
+  class StartTrade(private var body: HashMap<String, String>) : AsyncTask<Void, Void, JSONObject>() {
     override fun doInBackground(vararg params: Void?): JSONObject {
       return try {
         val client = OkHttpClient()
@@ -37,19 +37,19 @@ class LoginController {
     }
   }
 
-  class WebDoge(private var body: HashMap<String, String>) : AsyncTask<Void, Void, JSONObject>() {
+  class EndTrade(private var body: HashMap<String, String>) : AsyncTask<Void, Void, JSONObject>() {
     override fun doInBackground(vararg params: Void?): JSONObject {
       return try {
         val client = OkHttpClient()
         val mediaType: MediaType = "application/x-www-form-urlencoded".toMediaType()
         val body = MapToJason().map(body).toRequestBody(mediaType)
-        val request: Request = Request.Builder().url(Url.doge()).post(body).build()
+        val request: Request = Request.Builder().url(Url.web()).post(body).build()
         val response: Response = client.newCall(request).execute()
         return if (response.isSuccessful) {
           val input = BufferedReader(InputStreamReader(response.body!!.byteStream()))
           val inputData: String = input.readLine()
           val convertJSON = JSONObject(inputData)
-          JSONObject().put("code", 200).put("response", convertJSON["SessionCookie"])
+          JSONObject().put("code", 200).put("response", convertJSON)
         } else {
           JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
         }
