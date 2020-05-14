@@ -137,7 +137,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/D:/sowftwhere/IntelliJ%20IDEA%202019.3.1/plugins/android/lib/android.jar!/images/material_design_icons/action/ic_power_settings_new_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/D:/sowftwhere/IntelliJ%20IDEA%202019.3.1/plugins/android/lib/android.jar!/images/material_design_icons/av/ic_repeat_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -147,7 +147,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_power_settings" />
+                            <entry key="outputName" value="ic_repeat" />
                             <entry key="sourceFile" value="C:\Users\ecs" />
                           </map>
                         </option>

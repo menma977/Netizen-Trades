@@ -1,8 +1,10 @@
 package com.netizenchar.view
 
+import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
+import com.netizenchar.MainActivity
 import com.netizenchar.R
 import com.netizenchar.config.Loading
 import com.netizenchar.config.MD5
@@ -28,9 +30,8 @@ class ResultActivity : AppCompatActivity() {
   private lateinit var loading: Loading
   private lateinit var sessionUser: SessionUser
   private lateinit var response: JSONObject
-  private lateinit var start: TextView
-  private lateinit var finish: TextView
   private lateinit var statusView: TextView
+  private lateinit var description: TextView
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -38,24 +39,23 @@ class ResultActivity : AppCompatActivity() {
 
     loading = Loading(this)
     sessionUser = SessionUser(this)
-    start = findViewById(R.id.startTextView)
-    finish = findViewById(R.id.finishTextView)
     statusView = findViewById(R.id.statusTextView)
-    loading.openDialog()
+    description = findViewById(R.id.walletDescriptionTextView)
 
-    val startBalance = intent.getSerializableExtra("startBalance").toString()
     val endBalance = intent.getSerializableExtra("endBalance").toString()
     val status = intent.getSerializableExtra("status").toString()
     val uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
-    endTrade(uniqueCode, status, startBalance, endBalance)
+    endTrade(uniqueCode, status, endBalance)
   }
 
   override fun onBackPressed() {
     super.onBackPressed()
-    finish()
+    val goTo = Intent(this, MainActivity::class.java)
+    startActivity(goTo)
   }
 
-  private fun endTrade(uniqueCode: String, status: String, startBalance: String, endBalance: String) {
+  private fun endTrade(uniqueCode: String, status: String, endBalance: String) {
+    loading.openDialog()
     val body = HashMap<String, String>()
     body["a"] = "EndTrading"
     body["usertrade"] = sessionUser.get("username")
@@ -68,9 +68,10 @@ class ResultActivity : AppCompatActivity() {
     Timer().schedule(100) {
       response = DataWebController.EndTrade(body).execute().get()
       runOnUiThread {
-        start.text = startBalance
-        finish.text = endBalance
         statusView.text = status
+        description.text =
+          "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments.\n" +
+              "This is your doge wallet: " + sessionUser.get("wallet")
         loading.closeDialog()
       }
     }

@@ -22,7 +22,7 @@
         android:layout_height="wrap_content">
 
       <TextView
-          android:text="Hasil Bot"
+          android:text="@string/result"
           android:textSize="16sp"
           android:textColor="@color/textPrimary"
           android:layout_width="match_parent"
@@ -35,86 +35,46 @@
           android:background="@color/colorPrimary"/>
 
       <LinearLayout
-          android:orientation="horizontal"
+          android:orientation="vertical"
           android:layout_width="match_parent"
           android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_margin="5dp"
-            android:text="@string/start_balance"
-            android:textSize="16sp"
-            android:gravity="end"
-            android:textColor="@color/textPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/startTextView"
-            android:layout_margin="5dp"
-            android:text="@string/start_balance"
-            android:textSize="16sp"
-            android:gravity="start"
-            android:textColor="@color/textPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-      </LinearLayout>
-
-      <LinearLayout
-          android:orientation="horizontal"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_margin="5dp"
-            android:text="@string/finish_balance"
-            android:textSize="16sp"
-            android:gravity="end"
-            android:textColor="@color/textPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-        <TextView
-            android:id="@+id/finishTextView"
-            android:layout_margin="5dp"
-            android:text="@string/finish_balance"
-            android:textSize="16sp"
-            android:gravity="start"
-            android:textColor="@color/textPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
-
-      </LinearLayout>
-
-      <LinearLayout
-          android:orientation="horizontal"
-          android:layout_width="match_parent"
-          android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_margin="5dp"
-            android:text="@string/win_lose"
-            android:textSize="16sp"
-            android:gravity="end"
-            android:textColor="@color/textPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
 
         <TextView
             android:id="@+id/statusTextView"
             android:layout_margin="5dp"
             android:text="@string/win_lose"
-            android:textSize="16sp"
-            android:gravity="start"
+            android:textSize="25sp"
+            android:gravity="center"
             android:textColor="@color/textPrimary"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+      </LinearLayout>
+
+      <Space
+          android:layout_width="match_parent"
+          android:layout_height="10dp"/>
+
+      <LinearLayout
+          android:background="@drawable/card_primary"
+          android:layout_marginTop="5dp"
+          android:layout_marginStart="10dp"
+          android:layout_marginEnd="10dp"
+          android:layout_marginBottom="10dp"
+          android:padding="15dp"
+          android:elevation="5dp"
+          android:orientation="vertical"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/walletDescriptionTextView"
+            android:gravity="start"
+            android:hint="@string/description_deposit"
+            android:text="@string/description_attention"
+            android:textColor="@color/textPrimary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
       </LinearLayout>
 

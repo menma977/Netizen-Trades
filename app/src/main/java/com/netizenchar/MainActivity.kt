@@ -1,6 +1,7 @@
 package com.netizenchar
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import com.netizenchar.config.MD5
@@ -10,9 +11,11 @@ import com.netizenchar.view.HomeActivity
 import org.json.JSONObject
 import java.util.*
 import kotlin.concurrent.schedule
+import kotlin.system.exitProcess
+
 
 class MainActivity : AppCompatActivity() {
-  private lateinit var goTo:Intent
+  private lateinit var goTo: Intent
   private lateinit var response: JSONObject
   private lateinit var sessionUser: SessionUser
 
@@ -35,10 +38,10 @@ class MainActivity : AppCompatActivity() {
         if (response["code"] == 200) {
           if (response.getJSONObject("response")["Status"] == "0") {
             if (response.getJSONObject("response")["versiapk"] == BuildConfig.VERSION_NAME) {
-              println(sessionUser.get("username"))
               if (sessionUser.get("username").isEmpty()) {
                 goTo = Intent(applicationContext, LoginActivity::class.java)
                 goTo.putExtra("lock", false)
+                goTo.putExtra("version", "Build Version " + BuildConfig.VERSION_NAME)
                 startActivity(goTo)
                 finish()
               } else {
@@ -49,8 +52,7 @@ class MainActivity : AppCompatActivity() {
               }
             } else {
               sessionUser.clear()
-              goTo = Intent(applicationContext, LoginActivity::class.java)
-              goTo.putExtra("lock", true)
+              goTo = Intent(Intent.ACTION_VIEW, Uri.parse("https://netizenchar.com/"))
               startActivity(goTo)
               finish()
             }
@@ -58,15 +60,22 @@ class MainActivity : AppCompatActivity() {
             sessionUser.clear()
             goTo = Intent(applicationContext, LoginActivity::class.java)
             goTo.putExtra("lock", false)
+            goTo.putExtra("version", "Build Version " + BuildConfig.VERSION_NAME)
             startActivity(goTo)
             finish()
           }
         } else {
           sessionUser.clear()
           goTo = Intent(applicationContext, LoginActivity::class.java)
-          goTo.putExtra("lock", false)
+          goTo.putExtra("lock", true)
+          goTo.putExtra("version", "Build Version " + BuildConfig.VERSION_NAME)
           startActivity(goTo)
-          finish()
+          finishAffinity()
+          Timer().schedule(5000) {
+            runOnUiThread {
+              exitProcess(0)
+            }
+          }
         }
       }
     }

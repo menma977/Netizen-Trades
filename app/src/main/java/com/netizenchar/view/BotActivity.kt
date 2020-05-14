@@ -90,7 +90,7 @@ class BotActivity : AppCompatActivity() {
 
   private fun configChart() {
     series.color = Color.RED
-    cubicLineChart.axisTextColor = Color.WHITE
+    cubicLineChart.axisTextColor = Color.GRAY
     cubicLineChart.containsPoints()
     cubicLineChart.isUseDynamicScaling = true
     cubicLineChart.addSeries(series)
@@ -149,12 +149,11 @@ class BotActivity : AppCompatActivity() {
                   Timer().schedule(1000) {
                     runOnUiThread {
                       goTo = Intent(applicationContext, ResultActivity::class.java)
-                      goTo.putExtra("startBalance", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
                       goTo.putExtra("endBalance", balanceRemainingDogeLocal)
                       goTo.putExtra("status", "WIN")
                       goTo.putExtra("uniqueCode", uniqueCode)
                       startActivity(goTo)
-                      finish()
+                      finishAffinity()
                     }
                   }
                 } else if (balanceRemainingDogeLocal.toBigDecimal() <= BigDecimal(0)) {
@@ -162,12 +161,11 @@ class BotActivity : AppCompatActivity() {
                   Timer().schedule(1000) {
                     runOnUiThread {
                       goTo = Intent(applicationContext, ResultActivity::class.java)
-                      goTo.putExtra("startBalance", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
                       goTo.putExtra("endBalance", balanceRemainingDogeLocal)
                       goTo.putExtra("status", "LOSS")
                       goTo.putExtra("uniqueCode", uniqueCode)
                       startActivity(goTo)
-                      finish()
+                      finishAffinity()
                     }
                   }
                 }
@@ -180,12 +178,11 @@ class BotActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
                 this.cancel()
                 goTo = Intent(applicationContext, ResultActivity::class.java)
-                goTo.putExtra("startBalance", formatLot.format(balanceDoge * BigDecimal(0.00000001)))
                 goTo.putExtra("endBalance", balanceRemainingDogeLocal)
                 goTo.putExtra("status", "LOSS")
                 goTo.putExtra("uniqueCode", uniqueCode)
                 startActivity(goTo)
-                finish()
+                finishAffinity()
               }
               else -> {
                 Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
@@ -193,7 +190,7 @@ class BotActivity : AppCompatActivity() {
                 sessionUser.clear()
                 goTo = Intent(applicationContext, MainActivity::class.java)
                 startActivity(goTo)
-                finish()
+                finishAffinity()
               }
             }
           } catch (e: Exception) {
@@ -202,7 +199,7 @@ class BotActivity : AppCompatActivity() {
             sessionUser.clear()
             goTo = Intent(applicationContext, MainActivity::class.java)
             startActivity(goTo)
-            finish()
+            finishAffinity()
           }
         }
       }

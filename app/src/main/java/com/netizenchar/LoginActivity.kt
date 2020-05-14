@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import com.netizenchar.config.Loading
 import com.netizenchar.config.MD5
@@ -24,20 +25,23 @@ class LoginActivity : AppCompatActivity() {
   private lateinit var email: EditText
   private lateinit var password: EditText
   private lateinit var login: Button
+  private lateinit var version: TextView
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_login)
 
     val lock = intent.getSerializableExtra("lock").toString().toBoolean()
+    val versionResponse = intent.getSerializableExtra("version").toString()
     loading = Loading(this)
     sessionUser = SessionUser(this)
     email = findViewById(R.id.editTextEmail)
     password = findViewById(R.id.editTextPassword)
     login = findViewById(R.id.buttonLogin)
-    email.setText("budivk@yahoo.co.id")
-    password.setText("8888nx")
+    version = findViewById(R.id.versionTextView)
 
     loading.openDialog()
+
+    version.text = versionResponse
 
     if (lock) {
       email.isEnabled = false

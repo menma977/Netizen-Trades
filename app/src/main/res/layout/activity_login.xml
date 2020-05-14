@@ -21,6 +21,17 @@
         android:elevation="10dp"
         android:contentDescription="@string/logo"/>
 
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <TextView
+        android:textColor="@color/textPrimary"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/versionTextView"/>
+
     <LinearLayout
         android:elevation="10dp"
         android:layout_margin="20dp"

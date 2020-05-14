@@ -8,3 +8,5 @@ Java.gitignore
 /captures
 .externalNativeBuild
 .cxx
+key.jks
+/app/release/

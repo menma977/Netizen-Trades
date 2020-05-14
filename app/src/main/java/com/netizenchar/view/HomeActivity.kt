@@ -59,6 +59,11 @@ class HomeActivity : AppCompatActivity() {
       clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
       clipData = ClipData.newPlainText("Wallet", wallet.text.toString())
       clipboardManager.primaryClip = clipData
+      Toast.makeText(
+        applicationContext,
+        "Doge wallet has been copied",
+        Toast.LENGTH_LONG
+      ).show()
     }
 
     refreshBalance.setOnClickListener {
@@ -79,40 +84,49 @@ class HomeActivity : AppCompatActivity() {
     bot.setOnClickListener {
       val uniqueCode = UUID.randomUUID().toString()
       loading.openDialog()
-      val body = HashMap<String, String>()
-      body["a"] = "StartTrading"
-      body["usertrade"] = sessionUser.get("username")
-      body["passwordtrade"] = sessionUser.get("password")
-      body["notrx"] = uniqueCode
-      body["balanceawal"] = formatLot.format(balanceDoge * BigDecimal(0.00000001))
-      body["ref"] =
-        MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
-      Timer().schedule(100) {
-        response = DataWebController.StartTrade(body).execute().get()
-        println(response)
-        runOnUiThread {
-          if (response["code"] == 200) {
-            if (response.getJSONObject("response")["Status"] == "0") {
-              goTo = Intent(applicationContext, BotActivity::class.java)
-              goTo.putExtra("uniqueCode", uniqueCode)
-              goTo.putExtra("balanceDoge", balanceDoge)
-              loading.closeDialog()
-              startActivity(goTo)
+      if ((balanceDoge * BigDecimal(0.00000001)) < BigDecimal(10000)) {
+        Toast.makeText(
+          applicationContext,
+          "Your Doge Balance must more then 10000",
+          Toast.LENGTH_LONG
+        ).show()
+        loading.closeDialog()
+      } else {
+        val body = HashMap<String, String>()
+        body["a"] = "StartTrading"
+        body["usertrade"] = sessionUser.get("username")
+        body["passwordtrade"] = sessionUser.get("password")
+        body["notrx"] = uniqueCode
+        body["balanceawal"] = formatLot.format(balanceDoge * BigDecimal(0.00000001))
+        body["ref"] =
+          MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
+        Timer().schedule(100) {
+          response = DataWebController.StartTrade(body).execute().get()
+          println(response)
+          runOnUiThread {
+            if (response["code"] == 200) {
+              if (response.getJSONObject("response")["Status"] == "0") {
+                goTo = Intent(applicationContext, BotActivity::class.java)
+                goTo.putExtra("uniqueCode", uniqueCode)
+                goTo.putExtra("balanceDoge", balanceDoge)
+                loading.closeDialog()
+                startActivity(goTo)
+              } else {
+                Toast.makeText(
+                  applicationContext,
+                  "One day trading is only allowed once",
+                  Toast.LENGTH_LONG
+                ).show()
+                loading.closeDialog()
+              }
             } else {
               Toast.makeText(
                 applicationContext,
-                "You can't play anymore",
+                "your connection is lost",
                 Toast.LENGTH_LONG
               ).show()
               loading.closeDialog()
             }
-          } else {
-            Toast.makeText(
-              applicationContext,
-              "your connection is lost",
-              Toast.LENGTH_LONG
-            ).show()
-            loading.closeDialog()
           }
         }
       }
@@ -140,7 +154,8 @@ class HomeActivity : AppCompatActivity() {
         if (response["code"] == 200) {
           balanceDoge = response["response"].toString().toBigDecimal()
           val formatBalance = formatLot.format(balanceDoge * BigDecimal(0.00000001))
-          balance.text = "DOGE : $formatBalance"
+          balance.text = "DOGE Balance : $formatBalance"
+          bot.isEnabled = true
           loading.closeDialog()
         } else {
           balance.text = "DOGE : ERROR. click here to refresh"
