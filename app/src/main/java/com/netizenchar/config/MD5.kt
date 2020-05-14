@@ -22,7 +22,7 @@ class MD5 {
       }
       return hexString.toString()
     } catch (e: NoSuchAlgorithmException) {
-      e.printStackTrace()
+      //e.printStackTrace()
     }
     return ""
   }

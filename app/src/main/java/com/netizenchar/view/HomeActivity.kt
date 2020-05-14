@@ -102,7 +102,6 @@ class HomeActivity : AppCompatActivity() {
           MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
         Timer().schedule(100) {
           response = DataWebController.StartTrade(body).execute().get()
-          println(response)
           runOnUiThread {
             if (response["code"] == 200) {
               if (response.getJSONObject("response")["Status"] == "0") {

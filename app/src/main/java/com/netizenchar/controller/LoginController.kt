@@ -31,7 +31,7 @@ class LoginController {
           JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
         }
       } catch (e: Exception) {
-        e.printStackTrace()
+        //e.printStackTrace()
         JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
       }
     }
@@ -54,7 +54,7 @@ class LoginController {
           JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
         }
       } catch (e: Exception) {
-        e.printStackTrace()
+        //e.printStackTrace()
         JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
       }
     }
