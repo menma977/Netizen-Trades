@@ -154,7 +154,7 @@ class HomeActivity : AppCompatActivity() {
           balanceDoge = response["response"].toString().toBigDecimal()
           val formatBalance = formatLot.format(balanceDoge * BigDecimal(0.00000001))
           balance.text = "DOGE Balance : $formatBalance"
-          bot.isEnabled = true
+          bot.isEnabled = balanceDoge > BigDecimal(0)
           loading.closeDialog()
         } else {
           balance.text = "DOGE : ERROR. click here to refresh"

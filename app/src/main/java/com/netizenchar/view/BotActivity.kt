@@ -103,7 +103,7 @@ class BotActivity : AppCompatActivity() {
     val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
     balanceTargetDogeLocal = formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
     val body = HashMap<String, String>()
-    Timer().schedule(1000, 1000) {
+    Timer().schedule(1000, 2000) {
       if (stop) {
         this.cancel()
       } else {
@@ -173,27 +173,43 @@ class BotActivity : AppCompatActivity() {
               response["code"] == 404 -> {
                 Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
                 this.cancel()
-                goTo = Intent(applicationContext, ResultActivity::class.java)
-                goTo.putExtra("status", "LOSS")
-                startActivity(goTo)
-                finishAffinity()
+                Timer().schedule(1000) {
+                  runOnUiThread {
+                    goTo = Intent(applicationContext, ResultActivity::class.java)
+                    if (balanceRemainingDogeLocal.toBigDecimal() > (balanceDoge * BigDecimal(0.00000001))) {
+                      goTo.putExtra("status", "WIN")
+                    } else {
+                      goTo.putExtra("status", "LOSS")
+                    }
+                    startActivity(goTo)
+                    finishAffinity()
+                  }
+                }
               }
               else -> {
                 Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
                 this.cancel()
+                Timer().schedule(1000) {
+                  runOnUiThread {
+                    sessionUser.clear()
+                    goTo = Intent(applicationContext, MainActivity::class.java)
+                    startActivity(goTo)
+                    finishAffinity()
+                  }
+                }
+              }
+            }
+          } catch (e: Exception) {
+            Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
+            this.cancel()
+            Timer().schedule(1000) {
+              runOnUiThread {
                 sessionUser.clear()
                 goTo = Intent(applicationContext, MainActivity::class.java)
                 startActivity(goTo)
                 finishAffinity()
               }
             }
-          } catch (e: Exception) {
-            Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
-            this.cancel()
-            sessionUser.clear()
-            goTo = Intent(applicationContext, MainActivity::class.java)
-            startActivity(goTo)
-            finishAffinity()
           }
         }
       }

@@ -43,8 +43,7 @@ class ResultActivity : AppCompatActivity() {
 
     statusView.text = intent.getSerializableExtra("status").toString()
     description.text =
-      "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments.\n" +
-          "This is your doge wallet: " + sessionUser.get("wallet")
+      "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments."
     loading.closeDialog()
   }
 
