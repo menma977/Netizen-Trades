@@ -29,7 +29,6 @@ import kotlin.concurrent.schedule
 class ResultActivity : AppCompatActivity() {
   private lateinit var loading: Loading
   private lateinit var sessionUser: SessionUser
-  private lateinit var response: JSONObject
   private lateinit var statusView: TextView
   private lateinit var description: TextView
 
@@ -42,38 +41,16 @@ class ResultActivity : AppCompatActivity() {
     statusView = findViewById(R.id.statusTextView)
     description = findViewById(R.id.walletDescriptionTextView)
 
-    val endBalance = intent.getSerializableExtra("endBalance").toString()
-    val status = intent.getSerializableExtra("status").toString()
-    val uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
-    endTrade(uniqueCode, status, endBalance)
+    statusView.text = intent.getSerializableExtra("status").toString()
+    description.text =
+      "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments.\n" +
+          "This is your doge wallet: " + sessionUser.get("wallet")
+    loading.closeDialog()
   }
 
   override fun onBackPressed() {
     super.onBackPressed()
     val goTo = Intent(this, MainActivity::class.java)
     startActivity(goTo)
-  }
-
-  private fun endTrade(uniqueCode: String, status: String, endBalance: String) {
-    loading.openDialog()
-    val body = HashMap<String, String>()
-    body["a"] = "EndTrading"
-    body["usertrade"] = sessionUser.get("username")
-    body["passwordtrade"] = sessionUser.get("password")
-    body["notrx"] = uniqueCode
-    body["status"] = status
-    body["balanceakhir"] = endBalance
-    body["ref"] =
-      MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + status + "balanceakhirb0d0nk111179")
-    Timer().schedule(100) {
-      response = DataWebController.EndTrade(body).execute().get()
-      runOnUiThread {
-        statusView.text = status
-        description.text =
-          "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments.\n" +
-              "This is your doge wallet: " + sessionUser.get("wallet")
-        loading.closeDialog()
-      }
-    }
   }
 }

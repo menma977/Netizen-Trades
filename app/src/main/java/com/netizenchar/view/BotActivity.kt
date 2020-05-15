@@ -149,9 +149,7 @@ class BotActivity : AppCompatActivity() {
                   Timer().schedule(1000) {
                     runOnUiThread {
                       goTo = Intent(applicationContext, ResultActivity::class.java)
-                      goTo.putExtra("endBalance", balanceRemainingDogeLocal)
                       goTo.putExtra("status", "WIN")
-                      goTo.putExtra("uniqueCode", uniqueCode)
                       startActivity(goTo)
                       finishAffinity()
                     }
@@ -161,9 +159,7 @@ class BotActivity : AppCompatActivity() {
                   Timer().schedule(1000) {
                     runOnUiThread {
                       goTo = Intent(applicationContext, ResultActivity::class.java)
-                      goTo.putExtra("endBalance", balanceRemainingDogeLocal)
                       goTo.putExtra("status", "LOSS")
-                      goTo.putExtra("uniqueCode", uniqueCode)
                       startActivity(goTo)
                       finishAffinity()
                     }
@@ -178,9 +174,7 @@ class BotActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
                 this.cancel()
                 goTo = Intent(applicationContext, ResultActivity::class.java)
-                goTo.putExtra("endBalance", balanceRemainingDogeLocal)
                 goTo.putExtra("status", "LOSS")
-                goTo.putExtra("uniqueCode", uniqueCode)
                 startActivity(goTo)
                 finishAffinity()
               }
