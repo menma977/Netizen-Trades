@@ -10,3 +10,4 @@ Java.gitignore
 .cxx
 key.jks
 /app/release/
+*.properties
