@@ -11,3 +11,5 @@ Java.gitignore
 key.jks
 /app/release/
 *.properties
+.gradle/buildOutputCleanup/buildOutputCleanup.lock
+.gradle/5.6.4/fileHashes/fileHashes.lock
