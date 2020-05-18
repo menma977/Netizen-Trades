@@ -99,7 +99,7 @@ class BotActivity : AppCompatActivity() {
 
   private fun botMode() {
     balanceDogeLocal = balanceDoge
-    payIn = (balanceDoge * BigDecimal(0.00000001)) * BigDecimal(0.001)
+    payIn = (balanceDoge * BigDecimal(0.00000001)) * BigDecimal(0.01)
     val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
     balanceTargetDogeLocal = formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
     val body = HashMap<String, String>()
@@ -111,7 +111,7 @@ class BotActivity : AppCompatActivity() {
         body["s"] = sessionUser.get("sessionCookie")
         body["Low"] = "0"
         body["High"] = "940000"
-        body["PayIn"] = format.format((payIn * fibonacciArray[fibonacciJump].toBigDecimal()) * BigDecimal(1000000000))
+        body["PayIn"] = format.format((payIn * fibonacciArray[fibonacciJump].toBigDecimal()) * BigDecimal(100000000))
         body["ProtocolVersion"] = "2"
         body["ClientSeed"] = format.format((0..99999).random())
         body["Currency"] = "doge"
@@ -122,9 +122,9 @@ class BotActivity : AppCompatActivity() {
               response["code"] == 200 -> {
                 payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
                 balanceDogeLocal = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
-                profit = payOut - (payIn * BigDecimal(1000000000))
+                profit = payOut - (payIn * BigDecimal(100000000))
                 loseBot = (profit) < BigDecimal(0)
-                payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.001)
+                payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.01)
                 balanceRemainingDogeLocal = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
                 progress(
                   balanceDoge * BigDecimal(0.00000001),
@@ -187,7 +187,7 @@ class BotActivity : AppCompatActivity() {
                 }
               }
               else -> {
-                Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
+                Toast.makeText(applicationContext, "Bad Connection 404", Toast.LENGTH_LONG).show()
                 this.cancel()
                 Timer().schedule(1000) {
                   runOnUiThread {
@@ -200,7 +200,7 @@ class BotActivity : AppCompatActivity() {
               }
             }
           } catch (e: Exception) {
-            Toast.makeText(applicationContext, "Bad Connection", Toast.LENGTH_LONG).show()
+            Toast.makeText(applicationContext, "Bad Connection 500", Toast.LENGTH_LONG).show()
             this.cancel()
             Timer().schedule(1000) {
               runOnUiThread {
