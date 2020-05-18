@@ -98,12 +98,13 @@ class BotActivity : AppCompatActivity() {
   }
 
   private fun botMode() {
+    var dilay: Long = 1000
     balanceDogeLocal = balanceDoge
     payIn = (balanceDoge * BigDecimal(0.00000001)) * BigDecimal(0.01)
     val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
     balanceTargetDogeLocal = formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
     val body = HashMap<String, String>()
-    Timer().schedule(1000, 2000) {
+    Timer().schedule(dilay, 2000) {
       if (stop) {
         this.cancel()
       } else {
@@ -169,6 +170,7 @@ class BotActivity : AppCompatActivity() {
                 cubicLineChart.addSeries(series)
                 cubicLineChart.refreshDrawableState()
                 rowChart++
+                dilay = 1000
               }
               response["code"] == 404 -> {
                 Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
@@ -200,16 +202,14 @@ class BotActivity : AppCompatActivity() {
               }
             }
           } catch (e: Exception) {
-            Toast.makeText(applicationContext, "Bad Connection 500", Toast.LENGTH_LONG).show()
-            this.cancel()
-            Timer().schedule(1000) {
-              runOnUiThread {
-                sessionUser.clear()
-                goTo = Intent(applicationContext, MainActivity::class.java)
-                startActivity(goTo)
-                finishAffinity()
-              }
+            runOnUiThread {
+              Toast.makeText(
+                applicationContext,
+                "Bad Connection 500, Wait for the connection to stabilize",
+                Toast.LENGTH_LONG
+              ).show()
             }
+            dilay = 5000
           }
         }
       }

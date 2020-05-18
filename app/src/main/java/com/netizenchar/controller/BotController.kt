@@ -49,6 +49,7 @@ class BotController(private var body: HashMap<String, String>) : AsyncTask<Void,
         JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
       }
     } catch (e: Exception) {
+      //e.printStackTrace()
       JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
     }
   }

@@ -51,11 +51,11 @@ class DataWebController {
           val convertJSON = JSONObject(inputData)
           JSONObject().put("code", 200).put("response", convertJSON)
         } else {
-          JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
+          JSONObject().put("code", 404).put("response", "Unstable connection / Response Not found")
         }
       } catch (e: Exception) {
         //e.printStackTrace()
-        JSONObject().put("code", 500).put("response", "Unstable connection / Response Not found")
+        JSONObject().put("code", 200).put("response", "Unstable connection / Response Not found")
       }
     }
   }

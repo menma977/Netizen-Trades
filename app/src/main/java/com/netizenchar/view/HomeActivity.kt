@@ -118,10 +118,16 @@ class HomeActivity : AppCompatActivity() {
                 ).show()
                 loading.closeDialog()
               }
+            } else if (response["code"] == 404) {
+              goTo = Intent(applicationContext, BotActivity::class.java)
+              goTo.putExtra("uniqueCode", uniqueCode)
+              goTo.putExtra("balanceDoge", balanceDoge)
+              loading.closeDialog()
+              startActivity(goTo)
             } else {
               Toast.makeText(
                 applicationContext,
-                "your connection is lost",
+                "Your connection is not stable to do the robot process. find a place that is more likely to run the robot",
                 Toast.LENGTH_LONG
               ).show()
               loading.closeDialog()
