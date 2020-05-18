@@ -102,9 +102,10 @@ class BotActivity : AppCompatActivity() {
     balanceDogeLocal = balanceDoge
     payIn = (balanceDoge * BigDecimal(0.00000001)) * BigDecimal(0.01)
     val targetBalanceMirror = balanceDoge * BigDecimal(0.00000001)
-    balanceTargetDogeLocal = formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror)
+    balanceTargetDogeLocal =
+      formatLot.format((targetBalanceMirror * targetBalanceValue) + targetBalanceMirror).replace(",", ".")
     val body = HashMap<String, String>()
-    Timer().schedule(dilay, 2000) {
+    Timer().schedule(dilay, 1000) {
       if (stop) {
         this.cancel()
       } else {
@@ -126,7 +127,8 @@ class BotActivity : AppCompatActivity() {
                 profit = payOut - (payIn * BigDecimal(100000000))
                 loseBot = (profit) < BigDecimal(0)
                 payIn = (balanceDogeLocal) * BigDecimal(0.00000001) * BigDecimal(0.01)
-                balanceRemainingDogeLocal = formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001))
+                balanceRemainingDogeLocal =
+                  formatLot.format((balanceDogeLocal) * BigDecimal(0.00000001)).replace(",", ".")
                 progress(
                   balanceDoge * BigDecimal(0.00000001),
                   balanceRemainingDogeLocal.toBigDecimal(),
@@ -147,17 +149,20 @@ class BotActivity : AppCompatActivity() {
                 }
                 if (balanceRemainingDogeLocal.toBigDecimal() > balanceTargetDogeLocal.toBigDecimal()) {
                   this.cancel()
-                  Timer().schedule(1000) {
+                  this.cancel()
+                  Timer().schedule(2000) {
+                    loading.openDialog()
                     runOnUiThread {
                       goTo = Intent(applicationContext, ResultActivity::class.java)
                       goTo.putExtra("status", "WIN")
                       startActivity(goTo)
+                      loading.closeDialog()
                       finishAffinity()
                     }
                   }
                 } else if (balanceRemainingDogeLocal.toBigDecimal() <= BigDecimal(0)) {
                   this.cancel()
-                  Timer().schedule(1000) {
+                  Timer().schedule(2000) {
                     runOnUiThread {
                       goTo = Intent(applicationContext, ResultActivity::class.java)
                       goTo.putExtra("status", "LOSS")
@@ -175,7 +180,7 @@ class BotActivity : AppCompatActivity() {
               response["code"] == 404 -> {
                 Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
                 this.cancel()
-                Timer().schedule(1000) {
+                Timer().schedule(2000) {
                   runOnUiThread {
                     goTo = Intent(applicationContext, ResultActivity::class.java)
                     if (balanceRemainingDogeLocal.toBigDecimal() > (balanceDoge * BigDecimal(0.00000001))) {
@@ -205,7 +210,7 @@ class BotActivity : AppCompatActivity() {
             runOnUiThread {
               Toast.makeText(
                 applicationContext,
-                "Bad Connection 500, Wait for the connection to stabilize",
+                "Bad Connection 500, Wait for the connection to stabilize.",
                 Toast.LENGTH_LONG
               ).show()
             }
