@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
               }
             } else {
               sessionUser.clear()
-              goTo = Intent(Intent.ACTION_VIEW, Uri.parse("https://netizenchar.com/"))
+              goTo = Intent(Intent.ACTION_VIEW, Uri.parse("https://netizenchar.com/apk/app-release.apk"))
               startActivity(goTo)
               finish()
             }
