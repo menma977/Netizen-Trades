@@ -55,6 +55,7 @@ class HomeActivity : AppCompatActivity() {
 
     wallet.text = sessionUser.get("wallet")
 
+
     copy.setOnClickListener {
       clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
       clipData = ClipData.newPlainText("Wallet", wallet.text.toString())
@@ -160,7 +161,30 @@ class HomeActivity : AppCompatActivity() {
           balanceDoge = response["response"].toString().toBigDecimal()
           val formatBalance = formatLot.format(balanceDoge * BigDecimal(0.00000001))
           balance.text = "DOGE Balance : $formatBalance"
-          bot.isEnabled = balanceDoge > BigDecimal(0)
+          when {
+            balanceDoge > BigDecimal(0) && (balanceDoge * BigDecimal(0.00000001)) < sessionUser.get("limitDeposit").toBigDecimal() -> {
+              bot.isEnabled = true
+            }
+            (balanceDoge * BigDecimal(0.00000001)) >= sessionUser.get("limitDeposit").toBigDecimal() -> {
+              Toast.makeText(
+                applicationContext,
+                "Your deposit is too large, please increase your netizens to a minimum: " +
+                    formatLot.format(
+                      balanceDoge * BigDecimal(0.00000001) - sessionUser.get("limitDeposit").toBigDecimal()
+                    ),
+                Toast.LENGTH_LONG
+              ).show()
+              bot.isEnabled = false
+            }
+            else -> {
+              Toast.makeText(
+                applicationContext,
+                "has no remaining balance",
+                Toast.LENGTH_LONG
+              ).show()
+              bot.isEnabled = false
+            }
+          }
           loading.closeDialog()
         } else {
           balance.text = "DOGE : ERROR. click here to refresh"

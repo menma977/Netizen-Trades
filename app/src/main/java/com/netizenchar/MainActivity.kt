@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
                 finish()
               } else {
                 sessionUser.set("wallet", response.getJSONObject("response")["walletdepo"].toString())
+                sessionUser.set("limitDeposit", response.getJSONObject("response")["maxdepo"].toString())
                 goTo = Intent(applicationContext, HomeActivity::class.java)
                 startActivity(goTo)
                 finish()

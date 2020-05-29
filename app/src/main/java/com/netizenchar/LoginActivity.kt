@@ -80,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
       runOnUiThread {
         if (response["code"] == 200) {
           sessionUser.set("wallet", response.getJSONObject("response")["walletdepo"].toString())
+          sessionUser.set("limitDeposit", response.getJSONObject("response")["maxdepo"].toString())
           val usernameDoge = response.getJSONObject("response")["userdoge"].toString()
           val passwordDoge = response.getJSONObject("response")["passdoge"].toString()
           loginDoge(usernameDoge, passwordDoge)
