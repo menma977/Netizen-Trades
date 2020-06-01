@@ -162,7 +162,8 @@ class HomeActivity : AppCompatActivity() {
           val formatBalance = formatLot.format(balanceDoge * BigDecimal(0.00000001))
           balance.text = "DOGE Balance : $formatBalance"
           when {
-            balanceDoge > BigDecimal(0) && (balanceDoge * BigDecimal(0.00000001)) < sessionUser.get("limitDeposit").toBigDecimal() -> {
+            balanceDoge > BigDecimal(0) && (balanceDoge * BigDecimal(0.00000001)) < sessionUser.get("limitDeposit")
+              .toBigDecimal() -> {
               bot.isEnabled = true
             }
             (balanceDoge * BigDecimal(0.00000001)) >= sessionUser.get("limitDeposit").toBigDecimal() -> {
@@ -170,7 +171,8 @@ class HomeActivity : AppCompatActivity() {
                 applicationContext,
                 "Your deposit is too large, please increase your netizens to a minimum: " +
                     formatLot.format(
-                      balanceDoge * BigDecimal(0.00000001) - sessionUser.get("limitDeposit").toBigDecimal()
+                      (balanceDoge * BigDecimal(0.00000001) - sessionUser.get("limitDeposit")
+                        .toBigDecimal()) * BigDecimal(32) / BigDecimal(100000)
                     ),
                 Toast.LENGTH_LONG
               ).show()
