@@ -49,12 +49,6 @@ class BotActivity : AppCompatActivity() {
   private var targetBalanceValue = BigDecimal(0.05)
   private var uniqueCode = ""
 
-  /**
-   * todo: 3 jalur finish
-   * 1. balance mencapai 5%
-   * 2. stop paksa
-   */
-
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_bot)
@@ -178,8 +172,10 @@ class BotActivity : AppCompatActivity() {
                 dilay = 1000
               }
               response["code"] == 404 -> {
-                Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
-                this.cancel()
+                runOnUiThread {
+                  Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_LONG).show()
+                  this.cancel()
+                }
                 Timer().schedule(2000) {
                   runOnUiThread {
                     goTo = Intent(applicationContext, ResultActivity::class.java)
