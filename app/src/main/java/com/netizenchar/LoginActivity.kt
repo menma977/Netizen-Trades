@@ -38,8 +38,8 @@ class LoginActivity : AppCompatActivity() {
     password = findViewById(R.id.editTextPassword)
     login = findViewById(R.id.buttonLogin)
     version = findViewById(R.id.versionTextView)
-    //email.setText("budivk@yahoo.co.id")
-    //password.setText("8888nx")
+    email.setText("budivk@yahoo.co.id")
+    password.setText("8888nx")
 
     loading.openDialog()
 

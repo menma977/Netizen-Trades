@@ -6,10 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.netizenchar.MainActivity
 import com.netizenchar.R
 import com.netizenchar.config.Loading
@@ -23,6 +20,7 @@ import java.text.DecimalFormat
 import java.util.*
 import kotlin.concurrent.schedule
 
+@Suppress("DuplicatedCode")
 class HomeActivity : AppCompatActivity() {
   private lateinit var clipboardManager: ClipboardManager
   private lateinit var clipData: ClipData
@@ -36,9 +34,13 @@ class HomeActivity : AppCompatActivity() {
   private lateinit var wallet: TextView
   private lateinit var balance: TextView
   private lateinit var copy: Button
-  private lateinit var bot: Button
+  private lateinit var botFibonacci: Button
   private lateinit var refreshBalance: LinearLayout
+  private lateinit var contentProbability: LinearLayout
+  private lateinit var spinnerProbability: Spinner
+  private lateinit var botProbability: Button
   private var formatLot = DecimalFormat("#.#########")
+  private val body = HashMap<String, String>()
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_home)
@@ -48,12 +50,17 @@ class HomeActivity : AppCompatActivity() {
     wallet = findViewById(R.id.textViewWallet)
     balance = findViewById(R.id.textViewBalance)
     copy = findViewById(R.id.buttonCopy)
-    bot = findViewById(R.id.buttonBotMode)
+    botFibonacci = findViewById(R.id.buttonBotFibonacci)
     logout = findViewById(R.id.logoutButton)
     refreshBalance = findViewById(R.id.linearLayoutRefreshBalance)
+    contentProbability = findViewById(R.id.linearLayoutProbability)
+    spinnerProbability = findViewById(R.id.spinnerProbability)
+    botProbability = findViewById(R.id.buttonBotModeProbability)
     loading.openDialog()
 
     wallet.text = sessionUser.get("wallet")
+
+    generateProbability(spinnerProbability)
 
 
     copy.setOnClickListener {
@@ -82,7 +89,7 @@ class HomeActivity : AppCompatActivity() {
       }
     }
 
-    bot.setOnClickListener {
+    botFibonacci.setOnClickListener {
       val uniqueCode = UUID.randomUUID().toString()
       loading.openDialog()
       if ((balanceDoge * BigDecimal(0.00000001)) < BigDecimal(10000)) {
@@ -93,7 +100,6 @@ class HomeActivity : AppCompatActivity() {
         ).show()
         loading.closeDialog()
       } else {
-        val body = HashMap<String, String>()
         body["a"] = "StartTrading"
         body["usertrade"] = sessionUser.get("username")
         body["passwordtrade"] = sessionUser.get("password")
@@ -138,6 +144,61 @@ class HomeActivity : AppCompatActivity() {
       }
     }
 
+    botProbability.setOnClickListener {
+      val uniqueCode = UUID.randomUUID().toString()
+      loading.openDialog()
+      if ((balanceDoge * BigDecimal(0.00000001)) < BigDecimal(10000)) {
+        Toast.makeText(
+          applicationContext,
+          "Your Doge Balance must more then 10000",
+          Toast.LENGTH_LONG
+        ).show()
+        loading.closeDialog()
+      } else {
+        body["a"] = "StartTrading"
+        body["usertrade"] = sessionUser.get("username")
+        body["passwordtrade"] = sessionUser.get("password")
+        body["notrx"] = uniqueCode
+        body["balanceawal"] = formatLot.format(balanceDoge * BigDecimal(0.00000001))
+        body["ref"] =
+          MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
+        Timer().schedule(100) {
+          response = DataWebController.StartTrade(body).execute().get()
+          runOnUiThread {
+            if (response["code"] == 200) {
+              if (response.getJSONObject("response")["Status"] == "0") {
+//                goTo = Intent(applicationContext, BotActivity::class.java)
+//                goTo.putExtra("uniqueCode", uniqueCode)
+//                goTo.putExtra("balanceDoge", balanceDoge)
+//                loading.closeDialog()
+//                startActivity(goTo)
+              } else {
+                Toast.makeText(
+                  applicationContext,
+                  "One day trading is only allowed once",
+                  Toast.LENGTH_LONG
+                ).show()
+                loading.closeDialog()
+              }
+            } else if (response["code"] == 404) {
+//              goTo = Intent(applicationContext, BotActivity::class.java)
+//              goTo.putExtra("uniqueCode", uniqueCode)
+//              goTo.putExtra("balanceDoge", balanceDoge)
+//              loading.closeDialog()
+//              startActivity(goTo)
+            } else {
+              Toast.makeText(
+                applicationContext,
+                "Your connection is not stable to do the robot process. find a place that is more likely to run the robot",
+                Toast.LENGTH_LONG
+              ).show()
+              loading.closeDialog()
+            }
+          }
+        }
+      }
+    }
+
     getBalance()
   }
 
@@ -164,7 +225,8 @@ class HomeActivity : AppCompatActivity() {
           when {
             balanceDoge > BigDecimal(0) && (balanceDoge * BigDecimal(0.00000001)) < sessionUser.get("limitDeposit")
               .toBigDecimal() -> {
-              bot.isEnabled = true
+              botFibonacci.isEnabled = true
+              contentProbability.visibility = LinearLayout.VISIBLE
             }
             (balanceDoge * BigDecimal(0.00000001)) >= sessionUser.get("limitDeposit").toBigDecimal() -> {
               Toast.makeText(
@@ -176,7 +238,8 @@ class HomeActivity : AppCompatActivity() {
                     ),
                 Toast.LENGTH_LONG
               ).show()
-              bot.isEnabled = false
+              botFibonacci.isEnabled = false
+              contentProbability.visibility = LinearLayout.GONE
             }
             else -> {
               Toast.makeText(
@@ -184,7 +247,8 @@ class HomeActivity : AppCompatActivity() {
                 "has no remaining balance",
                 Toast.LENGTH_LONG
               ).show()
-              bot.isEnabled = false
+              botFibonacci.isEnabled = false
+              contentProbability.visibility = LinearLayout.GONE
             }
           }
           loading.closeDialog()
@@ -195,10 +259,19 @@ class HomeActivity : AppCompatActivity() {
             "your balance is not fully read. Please press the balance to refresh your balance",
             Toast.LENGTH_LONG
           ).show()
-          bot.isEnabled = false
+          botFibonacci.isEnabled = false
+          contentProbability.visibility = LinearLayout.GONE
           loading.closeDialog()
         }
       }
     }
+  }
+
+  private fun generateProbability(spinner: Spinner) {
+    val spinnerAdapter = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
+    for (i in 1..100) {
+      spinnerAdapter.add(i)
+    }
+    spinner.adapter = spinnerAdapter
   }
 }

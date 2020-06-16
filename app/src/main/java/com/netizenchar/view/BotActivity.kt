@@ -103,11 +103,12 @@ class BotActivity : AppCompatActivity() {
       if (stop) {
         this.cancel()
       } else {
+        payIn *= fibonacciArray[fibonacciJump].toBigDecimal()
         body["a"] = "PlaceBet"
         body["s"] = sessionUser.get("sessionCookie")
         body["Low"] = "0"
         body["High"] = "940000"
-        body["PayIn"] = format.format((payIn * fibonacciArray[fibonacciJump].toBigDecimal()) * BigDecimal(100000000))
+        body["PayIn"] = format.format((payIn) * BigDecimal(100000000))
         body["ProtocolVersion"] = "2"
         body["ClientSeed"] = format.format((0..99999).random())
         body["Currency"] = "doge"

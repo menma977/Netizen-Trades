@@ -14,7 +14,8 @@
   <string name="withdraw_all">Withdraw All</string>
   <string name="claim">Claim</string>
   <string name="belum_di_clam">Belum Di Clam</string>
-  <string name="bot">start</string>
+  <string name="botFibonacci">Bot Fibonacci</string>
+  <string name="botProbability">Probability</string>
   <string name="target_balance">Target Balance</string>
   <string name="stop">Stop</string>
   <string name="current_balance">Current Balance</string>

@@ -149,10 +149,41 @@
         android:layout_marginEnd="60dp"
         android:background="@drawable/button_danger"
         android:textColor="@color/textSecondary"
-        android:text="@string/bot"
+        android:text="@string/botFibonacci"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/buttonBotMode"/>
+        android:id="@+id/buttonBotFibonacci"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="10dp"/>
+
+    <LinearLayout
+        android:elevation="10dp"
+        android:id="@+id/linearLayoutProbability"
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:background="@drawable/card_primary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+      <Spinner
+          android:layout_width="0dp"
+          android:layout_height="match_parent"
+          android:id="@+id/spinnerProbability"
+          android:layout_weight="1"/>
+
+      <Button
+          android:background="@drawable/button_danger"
+          android:textColor="@color/textSecondary"
+          android:text="@string/botProbability"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:layout_weight="0.5"
+          android:id="@+id/buttonBotModeProbability"/>
+
+    </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
