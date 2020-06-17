@@ -160,18 +160,18 @@ class HomeActivity : AppCompatActivity() {
         body["passwordtrade"] = sessionUser.get("password")
         body["notrx"] = uniqueCode
         body["balanceawal"] = formatLot.format(balanceDoge * BigDecimal(0.00000001))
-        body["ref"] =
-          MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
+        body["ref"] = MD5().convert(sessionUser.get("username") + sessionUser.get("password") + uniqueCode + "balanceawalb0d0nk111179")
         Timer().schedule(100) {
           response = DataWebController.StartTrade(body).execute().get()
           runOnUiThread {
             if (response["code"] == 200) {
               if (response.getJSONObject("response")["Status"] == "0") {
-//                goTo = Intent(applicationContext, BotActivity::class.java)
-//                goTo.putExtra("uniqueCode", uniqueCode)
-//                goTo.putExtra("balanceDoge", balanceDoge)
-//                loading.closeDialog()
-//                startActivity(goTo)
+                goTo = Intent(applicationContext, Bot2Activity::class.java)
+                goTo.putExtra("uniqueCode", uniqueCode)
+                goTo.putExtra("balanceDoge", balanceDoge)
+                goTo.putExtra("target", spinnerProbability.selectedItem.toString().toInt())
+                loading.closeDialog()
+                startActivity(goTo)
               } else {
                 Toast.makeText(
                   applicationContext,
@@ -180,12 +180,6 @@ class HomeActivity : AppCompatActivity() {
                 ).show()
                 loading.closeDialog()
               }
-            } else if (response["code"] == 404) {
-//              goTo = Intent(applicationContext, BotActivity::class.java)
-//              goTo.putExtra("uniqueCode", uniqueCode)
-//              goTo.putExtra("balanceDoge", balanceDoge)
-//              loading.closeDialog()
-//              startActivity(goTo)
             } else {
               Toast.makeText(
                 applicationContext,
@@ -225,7 +219,7 @@ class HomeActivity : AppCompatActivity() {
           when {
             balanceDoge > BigDecimal(0) && (balanceDoge * BigDecimal(0.00000001)) < sessionUser.get("limitDeposit")
               .toBigDecimal() -> {
-              botFibonacci.isEnabled = true
+              botFibonacci.visibility = Button.VISIBLE
               contentProbability.visibility = LinearLayout.VISIBLE
             }
             (balanceDoge * BigDecimal(0.00000001)) >= sessionUser.get("limitDeposit").toBigDecimal() -> {
@@ -238,7 +232,7 @@ class HomeActivity : AppCompatActivity() {
                     ),
                 Toast.LENGTH_LONG
               ).show()
-              botFibonacci.isEnabled = false
+              botFibonacci.visibility = Button.GONE
               contentProbability.visibility = LinearLayout.GONE
             }
             else -> {
@@ -247,7 +241,7 @@ class HomeActivity : AppCompatActivity() {
                 "has no remaining balance",
                 Toast.LENGTH_LONG
               ).show()
-              botFibonacci.isEnabled = false
+              botFibonacci.visibility = Button.GONE
               contentProbability.visibility = LinearLayout.GONE
             }
           }
@@ -259,7 +253,7 @@ class HomeActivity : AppCompatActivity() {
             "your balance is not fully read. Please press the balance to refresh your balance",
             Toast.LENGTH_LONG
           ).show()
-          botFibonacci.isEnabled = false
+          botFibonacci.visibility = Button.GONE
           contentProbability.visibility = LinearLayout.GONE
           loading.closeDialog()
         }
@@ -273,5 +267,6 @@ class HomeActivity : AppCompatActivity() {
       spinnerAdapter.add(i)
     }
     spinner.adapter = spinnerAdapter
+    spinner.setSelection(99)
   }
 }

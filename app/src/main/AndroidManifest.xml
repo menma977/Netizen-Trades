@@ -20,6 +20,13 @@
     </activity>
     <activity
         android:theme="@style/AppTheme.NoActionBar"
+        android:name=".view.Bot2Activity">
+      <meta-data
+          android:name="android.support.PARENT_ACTIVITY"
+          android:value=".view.HomeActivity"/>
+    </activity>
+    <activity
+        android:theme="@style/AppTheme.NoActionBar"
         android:name=".view.BotActivity">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
