@@ -169,7 +169,7 @@ class HomeActivity : AppCompatActivity() {
                 goTo = Intent(applicationContext, Bot2Activity::class.java)
                 goTo.putExtra("uniqueCode", uniqueCode)
                 goTo.putExtra("balanceDoge", balanceDoge)
-                goTo.putExtra("target", spinnerProbability.selectedItem.toString().toInt())
+                goTo.putExtra("targetLow", spinnerProbability.selectedItem.toString().toInt())
                 loading.closeDialog()
                 startActivity(goTo)
               } else {
@@ -267,6 +267,6 @@ class HomeActivity : AppCompatActivity() {
       spinnerAdapter.add(i)
     }
     spinner.adapter = spinnerAdapter
-    spinner.setSelection(99)
+    spinner.setSelection(49)
   }
 }
