@@ -11,23 +11,25 @@
       android:roundIcon="@mipmap/ic_launcher_round"
       android:supportsRtl="true"
       android:theme="@style/AppTheme">
+    <activity android:name=".view.BotWebActivity">
+    </activity>
     <activity
-        android:theme="@style/AppTheme.NoActionBar"
-        android:name=".view.ResultActivity">
+        android:name=".view.ResultActivity"
+        android:theme="@style/AppTheme.NoActionBar">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".view.HomeActivity"/>
     </activity>
     <activity
-        android:theme="@style/AppTheme.NoActionBar"
-        android:name=".view.Bot2Activity">
+        android:name=".view.Bot2Activity"
+        android:theme="@style/AppTheme.NoActionBar">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".view.HomeActivity"/>
     </activity>
     <activity
-        android:theme="@style/AppTheme.NoActionBar"
-        android:name=".view.BotActivity">
+        android:name=".view.BotActivity"
+        android:theme="@style/AppTheme.NoActionBar">
       <meta-data
           android:name="android.support.PARENT_ACTIVITY"
           android:value=".view.HomeActivity"/>

@@ -198,6 +198,20 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"/>
 
+    <Button
+        android:layout_marginStart="60dp"
+        android:layout_marginEnd="60dp"
+        android:background="@drawable/button_danger"
+        android:textColor="@color/textSecondary"
+        android:text="@string/bot_web"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonBotWeb"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
+
     <LinearLayout
         android:background="@drawable/card_primary"
         android:layout_marginTop="5dp"

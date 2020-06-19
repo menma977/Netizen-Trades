@@ -14,8 +14,8 @@
   <string name="withdraw_all">Withdraw All</string>
   <string name="claim">Claim</string>
   <string name="belum_di_clam">Belum Di Clam</string>
-  <string name="botFibonacci">Bot Fibonacci</string>
-  <string name="botProbability">Alembert</string>
+  <string name="botFibonacci">Bot A</string>
+  <string name="botProbability">Bot B</string>
   <string name="target_balance">Target Balance</string>
   <string name="stop">Stop</string>
   <string name="current_balance">Current Balance</string>
@@ -23,4 +23,6 @@
   <string name="description_attention">Netizen Trading Robots can make 3% profit and 1% commission for your sponsors, who will enter your doge wallet without the need to withdraw funds. Within 1 day only allowed to trade 1 time. If the robot fails to make profit, it will make a cut loss and the total loss from the cut loss robot will be replaced by a ticket for charity. Please do not turn off the cellphone when the robot is running. And keep the internet connection stable. Good luck.</string>
   <string name="result">Result</string>
   <string name="risk">Risk</string>
+  <string name="please_wait">Please wait</string>
+  <string name="bot_web">Bot C</string>
 </resources>

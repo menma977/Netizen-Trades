@@ -9,7 +9,7 @@ import android.widget.Toast
 import com.netizenchar.R
 import com.netizenchar.config.Loading
 import com.netizenchar.config.ValueFormat
-import com.netizenchar.controller.BotController
+import com.netizenchar.controller.DogeController
 import com.netizenchar.model.SessionUser
 import org.eazegraph.lib.charts.ValueLineChart
 import org.eazegraph.lib.models.ValueLinePoint
@@ -98,7 +98,7 @@ class Bot2Activity : AppCompatActivity() {
           body["ProtocolVersion"] = "2"
           body["ClientSeed"] = seed
           body["Currency"] = "doge"
-          response = BotController(body).execute().get()
+          response = DogeController(body).execute().get()
           if (response["code"] == 200) {
             balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
 

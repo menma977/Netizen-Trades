@@ -4,13 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.TextView
+import android.widget.Toast
 import com.netizenchar.MainActivity
 import com.netizenchar.R
 import com.netizenchar.config.Loading
 import com.netizenchar.config.MD5
-import com.netizenchar.controller.DataWebController
+import com.netizenchar.config.ValueFormat
+import com.netizenchar.controller.WebController
 import com.netizenchar.model.SessionUser
 import org.json.JSONObject
+import java.lang.Exception
+import java.math.BigDecimal
 import java.util.*
 import kotlin.concurrent.schedule
 
@@ -28,28 +32,82 @@ import kotlin.concurrent.schedule
  */
 class ResultActivity : AppCompatActivity() {
   private lateinit var loading: Loading
-  private lateinit var sessionUser: SessionUser
+  private lateinit var user: SessionUser
+  private lateinit var goTo: Intent
+  private lateinit var valueFormat: ValueFormat
+
   private lateinit var statusView: TextView
   private lateinit var description: TextView
 
+  private lateinit var uniqueCode: String
+  private lateinit var startBalance: BigDecimal
+  private lateinit var response: JSONObject
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_result)
 
     loading = Loading(this)
-    sessionUser = SessionUser(this)
+    user = SessionUser(this)
+    valueFormat = ValueFormat()
+
+    loading.openDialog()
+
     statusView = findViewById(R.id.statusTextView)
     description = findViewById(R.id.walletDescriptionTextView)
+
+    uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
+    startBalance = intent.getSerializableExtra("balanceStart").toString().toBigDecimal()
 
     statusView.text = intent.getSerializableExtra("status").toString()
     description.text =
       "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments."
-    loading.closeDialog()
+
+    sendDataToWeb()
   }
 
   override fun onBackPressed() {
     super.onBackPressed()
     val goTo = Intent(this, MainActivity::class.java)
     startActivity(goTo)
+  }
+
+  private fun sendDataToWeb() {
+    Timer().schedule(1000) {
+      val body = HashMap<String, String>()
+      body["a"] = "EndTrading1"
+      body["usertrade"] = user.get("username")
+      body["passwordtrade"] = user.get("password")
+      body["notrx"] = intent.getSerializableExtra("uniqueCode").toString()
+      body["status"] = intent.getSerializableExtra("status").toString()
+      body["startbalance"] = valueFormat.decimalToDoge(startBalance).toPlainString()
+      body["ref"] = MD5().convert(
+        user.get("username") +
+            user.get("password") +
+            body["notrx"] +
+            body["status"] +
+            "balanceakhirb0d0nk111179"
+      )
+      response = WebController(body).execute().get()
+      try {
+        if (response["code"] == 200) {
+          if (response.getJSONObject("data")["Status"].toString() == "0") {
+            statusView.text = response.getJSONObject("data")["profit"].toString()
+            loading.closeDialog()
+          } else {
+            goTo = Intent(applicationContext, MainActivity::class.java)
+            startActivity(goTo)
+            finish()
+            loading.closeDialog()
+          }
+        } else {
+          statusView.text = response["response"].toString()
+          loading.closeDialog()
+        }
+      } catch (e: Exception) {
+        runOnUiThread {
+          Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show()
+        }
+      }
+    }
   }
 }

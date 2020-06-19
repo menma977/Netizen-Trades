@@ -9,7 +9,8 @@ import android.widget.TextView
 import android.widget.Toast
 import com.netizenchar.config.Loading
 import com.netizenchar.config.MD5
-import com.netizenchar.controller.LoginController
+import com.netizenchar.controller.DogeController
+import com.netizenchar.controller.WebController
 import com.netizenchar.model.SessionUser
 import com.netizenchar.view.HomeActivity
 import org.json.JSONObject
@@ -38,6 +39,9 @@ class LoginActivity : AppCompatActivity() {
     password = findViewById(R.id.editTextPassword)
     login = findViewById(R.id.buttonLogin)
     version = findViewById(R.id.versionTextView)
+
+//    email.setText("budivk@yahoo.co.id")
+//    password.setText("8899nxxx")
 
     loading.openDialog()
 
@@ -74,16 +78,16 @@ class LoginActivity : AppCompatActivity() {
     body["password"] = password
     body["ref"] = MD5().convert(email + password + "b0d0nk111179")
     Timer().schedule(100) {
-      response = LoginController.Web(body).execute().get()
+      response = WebController(body).execute().get()
       runOnUiThread {
         if (response["code"] == 200) {
-          sessionUser.set("wallet", response.getJSONObject("response")["walletdepo"].toString())
-          sessionUser.set("limitDeposit", response.getJSONObject("response")["maxdepo"].toString())
-          val usernameDoge = response.getJSONObject("response")["userdoge"].toString()
-          val passwordDoge = response.getJSONObject("response")["passdoge"].toString()
+          sessionUser.set("wallet", response.getJSONObject("data")["walletdepo"].toString())
+          sessionUser.set("limitDeposit", response.getJSONObject("data")["maxdepo"].toString())
+          val usernameDoge = response.getJSONObject("data")["userdoge"].toString()
+          val passwordDoge = response.getJSONObject("data")["passdoge"].toString()
           loginDoge(usernameDoge, passwordDoge)
         } else {
-          Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_SHORT).show()
+          Toast.makeText(applicationContext, response["data"].toString(), Toast.LENGTH_SHORT).show()
           loading.closeDialog()
         }
       }
@@ -98,18 +102,18 @@ class LoginActivity : AppCompatActivity() {
     body["password"] = password
     body["Totp"] = "''"
     Timer().schedule(100) {
-      response = LoginController.WebDoge(body).execute().get()
+      response = DogeController(body).execute().get()
       runOnUiThread {
         if (response["code"] == 200) {
           sessionUser.set("username", username)
           sessionUser.set("password", password)
-          sessionUser.set("sessionCookie", response["response"].toString())
+          sessionUser.set("sessionCookie",response.getJSONObject("data")["SessionCookie"].toString())
           goTo = Intent(applicationContext, HomeActivity::class.java)
           startActivity(goTo)
           loading.closeDialog()
           finish()
         } else {
-          Toast.makeText(applicationContext, response["response"].toString(), Toast.LENGTH_SHORT).show()
+          Toast.makeText(applicationContext, response["data"].toString(), Toast.LENGTH_SHORT).show()
           loading.closeDialog()
         }
       }
