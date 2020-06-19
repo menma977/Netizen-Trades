@@ -45,7 +45,10 @@ class DogeController(private var body: HashMap<String, String>) : AsyncTask<Void
               JSONObject().put("code", 404).put("data", "Max Payout Exceeded")
             }
             convertJSON.toString().contains("error") -> {
-              JSONObject().put("code", 500).put("data", "Invalid request")
+              JSONObject().put("code", 404).put("data", "Invalid request")
+            }
+            convertJSON.toString().contains("www.999doge.com") -> {
+              JSONObject().put("code", 404).put("data", "Invalid request")
             }
             else -> {
               JSONObject().put("code", 200).put("data", convertJSON)

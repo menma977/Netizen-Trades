@@ -62,7 +62,7 @@ class ResultActivity : AppCompatActivity() {
     description.text =
       "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments."
 
-    sendDataToWeb()
+//    sendDataToWeb()
   }
 
   override fun onBackPressed() {
@@ -100,7 +100,7 @@ class ResultActivity : AppCompatActivity() {
             loading.closeDialog()
           }
         } else {
-          statusView.text = response["response"].toString()
+          statusView.text = response["data"].toString()
           loading.closeDialog()
         }
       } catch (e: Exception) {

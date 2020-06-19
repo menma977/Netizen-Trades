@@ -1,7 +1,6 @@
 package com.netizenchar.view
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.widget.ProgressBar
@@ -72,7 +71,7 @@ class BotActivity : AppCompatActivity() {
 
     loading.openDialog()
     balance = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
-    balanceLimitTargetLow = intent.getSerializableExtra("targetLow").toString().toBigDecimal()
+    balanceLimitTargetLow = BigDecimal(0)
       .multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
     balanceRemaining = balance
     balanceTarget = valueFormat.dogeToDecimal(valueFormat.decimalToDoge((balance * balanceLimitTarget) + balance))
@@ -92,8 +91,8 @@ class BotActivity : AppCompatActivity() {
   }
 
   private fun configChart() {
-    series.color = Color.RED
-    cubicLineChart.axisTextColor = Color.GRAY
+    series.color = getColor(R.color.colorAccent)
+    cubicLineChart.axisTextColor = getColor(R.color.textPrimary)
     cubicLineChart.containsPoints()
     cubicLineChart.isUseDynamicScaling = true
     cubicLineChart.addSeries(series)
@@ -104,7 +103,7 @@ class BotActivity : AppCompatActivity() {
     var time = System.currentTimeMillis()
     val trigger = Object()
     synchronized(trigger) {
-      loop@ while (balanceRemaining in balanceLimitTargetLow..balanceTarget) {
+      while (balanceRemaining in balanceLimitTargetLow..balanceTarget) {
         val delta = System.currentTimeMillis() - time
         if (delta >= 1000) {
           time = System.currentTimeMillis()
@@ -119,51 +118,55 @@ class BotActivity : AppCompatActivity() {
           body["ClientSeed"] = seed
           body["Currency"] = "doge"
           response = DogeController(body).execute().get()
-          if (response["code"] == 200) {
-            balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
+          try {
+            if (response["code"] == 200) {
+              balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
 
-            seed = response.getJSONObject("response")["Next"].toString()
-            payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
-            balanceRemaining = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
-            profit = payOut - payIn
-            balanceRemaining += profit
-            loseBot = profit < BigDecimal(0)
-            payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balanceRemaining) * BigDecimal(0.001))
+              seed = response.getJSONObject("data")["Next"].toString()
+              payOut = response.getJSONObject("data")["PayOut"].toString().toBigDecimal()
+              balanceRemaining = response.getJSONObject("data")["StartingBalance"].toString().toBigDecimal()
+              profit = payOut - payIn
+              balanceRemaining += profit
+              loseBot = profit < BigDecimal(0)
+              payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balanceRemaining) * BigDecimal(0.001))
 
-            if (loseBot) {
-              if (fibonacciJump >= (fibonacciArray.size - 1)) {
-                fibonacciJump = fibonacciArray.size - 1
+              if (loseBot) {
+                if (fibonacciJump >= (fibonacciArray.size - 1)) {
+                  fibonacciJump = fibonacciArray.size - 1
+                } else {
+                  fibonacciJump += 4
+                }
               } else {
-                fibonacciJump += 4
+                if (fibonacciJump == 0) {
+                  fibonacciJump = 0
+                } else {
+                  fibonacciJump -= 1
+                }
               }
+
+              runOnUiThread {
+                progress(balance, balanceRemaining, balanceTarget)
+                if (rowChart >= 49) {
+                  series.series.removeAt(0)
+                  series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
+                } else {
+                  series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
+                }
+                cubicLineChart.addSeries(series)
+                cubicLineChart.refreshDrawableState()
+              }
+              rowChart++
+            } else if (response["code"] == 500) {
+              runOnUiThread {
+                balanceView.text = "sleep mode Active"
+                Toast.makeText(applicationContext, "sleep mode Active Wait to continue", Toast.LENGTH_LONG).show()
+              }
+              trigger.wait(60000)
             } else {
-              if (fibonacciJump == 0) {
-                fibonacciJump = 0
-              } else {
-                fibonacciJump -= 1
-              }
+              break
             }
-
-            runOnUiThread {
-              progress(balance, balanceRemaining, balanceTarget)
-              if (rowChart >= 29) {
-                series.series.removeAt(0)
-                series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
-              } else {
-                series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
-              }
-              cubicLineChart.addSeries(series)
-              cubicLineChart.refreshDrawableState()
-            }
-            rowChart++
-          } else if (response["code"] == 404) {
+          } catch (e: Exception) {
             break
-          } else {
-            runOnUiThread {
-              balanceView.text = "sleep mode Active"
-              Toast.makeText(applicationContext, "sleep mode Active Wait to continue", Toast.LENGTH_LONG).show()
-            }
-            trigger.wait(60000)
           }
         }
       }

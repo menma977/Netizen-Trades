@@ -15,6 +15,7 @@ import org.eazegraph.lib.charts.ValueLineChart
 import org.eazegraph.lib.models.ValueLinePoint
 import org.eazegraph.lib.models.ValueLineSeries
 import org.json.JSONObject
+import java.lang.Exception
 import java.math.BigDecimal
 
 class Bot2Activity : AppCompatActivity() {
@@ -63,12 +64,13 @@ class Bot2Activity : AppCompatActivity() {
 
     loading.openDialog()
     balance = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
-    balanceLimitTargetLow = intent.getSerializableExtra("targetLow").toString().toBigDecimal()
+    val calculateLimitLow = intent.getSerializableExtra("targetLow").toString().toBigDecimal()
       .multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
+    balanceLimitTargetLow = valueFormat.decimalToDoge(balance) * calculateLimitLow
     balanceRemaining = balance
     balanceTarget = valueFormat.dogeToDecimal(valueFormat.decimalToDoge((balance * balanceLimitTarget) + balance))
     payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * BigDecimal(0.001))
-    balanceLimitTargetLow = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * balanceLimitTargetLow)
+    balanceLimitTargetLow = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) - balanceLimitTargetLow)
 
     balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
 
@@ -85,7 +87,7 @@ class Bot2Activity : AppCompatActivity() {
     var time = System.currentTimeMillis()
     val trigger = Object()
     synchronized(trigger) {
-      loop@ while (balanceRemaining in balanceLimitTargetLow..balanceTarget) {
+      while (balanceRemaining in balanceLimitTargetLow..balanceTarget) {
         val delta = System.currentTimeMillis() - time
         if (delta >= 1000) {
           time = System.currentTimeMillis()
@@ -99,52 +101,56 @@ class Bot2Activity : AppCompatActivity() {
           body["ClientSeed"] = seed
           body["Currency"] = "doge"
           response = DogeController(body).execute().get()
-          if (response["code"] == 200) {
-            balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
+          try {
+            if (response["code"] == 200) {
+              balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
 
-            seed = response.getJSONObject("response")["Next"].toString()
-            payOut = response.getJSONObject("response")["PayOut"].toString().toBigDecimal()
-            balanceRemaining = response.getJSONObject("response")["StartingBalance"].toString().toBigDecimal()
-            profit = payOut - payIn
-            balanceRemaining += profit
-            loseBot = profit < BigDecimal(0)
+              seed = response.getJSONObject("data")["Next"].toString()
+              payOut = response.getJSONObject("data")["PayOut"].toString().toBigDecimal()
+              balanceRemaining = response.getJSONObject("data")["StartingBalance"].toString().toBigDecimal()
+              profit = payOut - payIn
+              balanceRemaining += profit
+              loseBot = profit < BigDecimal(0)
 
-            if (loseBot) {
-              val betaBalance = valueFormat
-                .dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001))).multiply(BigDecimal(2))
-              payIn += betaBalance
-              rowLoseBot += 2
+              if (loseBot) {
+                val betaBalance = valueFormat
+                  .dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001))).multiply(BigDecimal(2))
+                payIn += betaBalance
+                rowLoseBot += 2
+              } else {
+                if (rowLoseBot == 0) {
+                  payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001)))
+                  rowLoseBot = 0
+                } else {
+                  val betaBalance = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001)))
+                  payIn -= betaBalance
+                  rowLoseBot--
+                }
+              }
+
+              runOnUiThread {
+                progress(balance, balanceRemaining, balanceTarget)
+                if (rowChart >= 49) {
+                  series.series.removeAt(0)
+                  series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
+                } else {
+                  series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
+                }
+                cubicLineChart.addSeries(series)
+                cubicLineChart.refreshDrawableState()
+              }
+              rowChart++
+            } else if (response["code"] == 500) {
+              runOnUiThread {
+                balanceView.text = "sleep mode Active"
+                Toast.makeText(applicationContext, "sleep mode Active Wait to continue", Toast.LENGTH_LONG).show()
+              }
+              trigger.wait(60000)
             } else {
-              if (rowLoseBot == 0) {
-                payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001)))
-                rowLoseBot = 0
-              } else {
-                val betaBalance = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001)))
-                payIn -= betaBalance
-                rowLoseBot--
-              }
+              break
             }
-
-            runOnUiThread {
-              progress(balance, balanceRemaining, balanceTarget)
-              if (rowChart >= 29) {
-                series.series.removeAt(0)
-                series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
-              } else {
-                series.addPoint(ValueLinePoint("$rowChart", valueFormat.decimalToDoge(balanceRemaining).toFloat()))
-              }
-              cubicLineChart.addSeries(series)
-              cubicLineChart.refreshDrawableState()
-            }
-            rowChart++
-          } else if (response["code"] == 404) {
+          } catch (e: Exception) {
             break
-          } else {
-            runOnUiThread {
-              balanceView.text = "sleep mode Active"
-              Toast.makeText(applicationContext, "sleep mode Active Wait to continue", Toast.LENGTH_LONG).show()
-            }
-            trigger.wait(60000)
           }
         }
       }
