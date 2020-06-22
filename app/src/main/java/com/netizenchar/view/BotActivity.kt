@@ -71,8 +71,7 @@ class BotActivity : AppCompatActivity() {
 
     loading.openDialog()
     balance = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
-    balanceLimitTargetLow = BigDecimal(0)
-      .multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
+    balanceLimitTargetLow = BigDecimal(0).multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
     balanceRemaining = balance
     balanceTarget = valueFormat.dogeToDecimal(valueFormat.decimalToDoge((balance * balanceLimitTarget) + balance))
     payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * BigDecimal(0.001))
@@ -112,7 +111,7 @@ class BotActivity : AppCompatActivity() {
           body["a"] = "PlaceBet"
           body["s"] = user.get("sessionCookie")
           body["Low"] = "0"
-          body["High"] = "940000"
+          body["High"] = "899999"
           body["PayIn"] = payIn.toPlainString()
           body["ProtocolVersion"] = "2"
           body["ClientSeed"] = seed
@@ -128,7 +127,7 @@ class BotActivity : AppCompatActivity() {
               profit = payOut - payIn
               balanceRemaining += profit
               loseBot = profit < BigDecimal(0)
-              payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balanceRemaining) * BigDecimal(0.001))
+              payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * BigDecimal(0.001))
 
               if (loseBot) {
                 if (fibonacciJump >= (fibonacciArray.size - 1)) {

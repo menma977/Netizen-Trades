@@ -56,13 +56,14 @@ class ResultActivity : AppCompatActivity() {
     description = findViewById(R.id.walletDescriptionTextView)
 
     uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
-    startBalance = intent.getSerializableExtra("balanceStart").toString().toBigDecimal()
+    startBalance = intent.getSerializableExtra("startBalance").toString().toBigDecimal()
 
     statusView.text = intent.getSerializableExtra("status").toString()
     description.text =
       "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments."
 
 //    sendDataToWeb()
+    loading.closeDialog()
   }
 
   override fun onBackPressed() {
