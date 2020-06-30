@@ -39,14 +39,13 @@ class Bot2Activity : AppCompatActivity() {
 
   private lateinit var uniqueCode: String
 
-  private var rowLoseBot = 0
   private var rowChart = 0
   private var loseBot = false
   private var balanceLimitTarget = BigDecimal(0.05)
   private var balanceLimitTargetLow = BigDecimal(0)
   private var seed = (0..99999).random().toString()
   private var thread = Thread()
-
+  private var formula = 1
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_bot)
@@ -91,11 +90,12 @@ class Bot2Activity : AppCompatActivity() {
         val delta = System.currentTimeMillis() - time
         if (delta >= 1000) {
           time = System.currentTimeMillis()
+          payIn *= formula.toBigDecimal()
           val body = HashMap<String, String>()
           body["a"] = "PlaceBet"
           body["s"] = user.get("sessionCookie")
           body["Low"] = "0"
-          body["High"] = "700000"
+          body["High"] = "500000"
           body["PayIn"] = payIn.toPlainString()
           body["ProtocolVersion"] = "2"
           body["ClientSeed"] = seed
@@ -111,21 +111,13 @@ class Bot2Activity : AppCompatActivity() {
               profit = payOut - payIn
               balanceRemaining += profit
               loseBot = profit < BigDecimal(0)
+              payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * BigDecimal(0.001))
 
               if (loseBot) {
-                val betaBalance = valueFormat
-                  .dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001))).multiply(BigDecimal(2))
-                payIn += betaBalance
-                rowLoseBot += 2
+                formula *= 2
               } else {
-                if (rowLoseBot == 0) {
-                  payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001)))
-                  rowLoseBot = 0
-                } else {
-                  val betaBalance = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance).multiply(BigDecimal(0.001)))
-                  payIn -= betaBalance
-                  rowLoseBot--
-                }
+                formula = 1
+                payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * BigDecimal(0.001))
               }
 
               runOnUiThread {

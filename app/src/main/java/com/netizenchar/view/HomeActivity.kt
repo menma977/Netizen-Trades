@@ -138,7 +138,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     botFibonacci.setOnClickListener {
-      var uniqueCode = UUID.randomUUID().toString()
+      val uniqueCode = UUID.randomUUID().toString()
       loading.openDialog()
       if (ValueFormat().decimalToDoge(balanceValue) < BigDecimal(10000)) {
         Toast.makeText(
@@ -231,7 +231,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     botProbability.setOnClickListener {
-      var uniqueCode = UUID.randomUUID().toString()
+      val uniqueCode = UUID.randomUUID().toString()
       loading.openDialog()
       if (ValueFormat().decimalToDoge(balanceValue) < BigDecimal(10000)) {
         Toast.makeText(
@@ -409,10 +409,10 @@ class HomeActivity : AppCompatActivity() {
 
   private fun generateProbability(spinner: Spinner) {
     val spinnerAdapter = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-    for (i in 1..100) {
-      spinnerAdapter.add(i)
+    for (i in 3..10) {
+      spinnerAdapter.add(i * 10)
     }
     spinner.adapter = spinnerAdapter
-    spinner.setSelection(99)
+    spinner.setSelection(7)
   }
 }

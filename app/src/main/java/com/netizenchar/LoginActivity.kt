@@ -1,7 +1,11 @@
 package com.netizenchar
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
@@ -39,6 +43,8 @@ class LoginActivity : AppCompatActivity() {
     password = findViewById(R.id.editTextPassword)
     login = findViewById(R.id.buttonLogin)
     version = findViewById(R.id.versionTextView)
+
+    doRequestPermission()
 
     loading.openDialog()
 
@@ -104,7 +110,7 @@ class LoginActivity : AppCompatActivity() {
         if (response["code"] == 200) {
           sessionUser.set("username", username)
           sessionUser.set("password", password)
-          sessionUser.set("sessionCookie",response.getJSONObject("data")["SessionCookie"].toString())
+          sessionUser.set("sessionCookie", response.getJSONObject("data")["SessionCookie"].toString())
           goTo = Intent(applicationContext, HomeActivity::class.java)
           startActivity(goTo)
           loading.closeDialog()
@@ -113,6 +119,33 @@ class LoginActivity : AppCompatActivity() {
           Toast.makeText(applicationContext, response["data"].toString(), Toast.LENGTH_SHORT).show()
           loading.closeDialog()
         }
+      }
+    }
+  }
+
+  private fun doRequestPermission() {
+    if (
+      ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
+      ) != PackageManager.PERMISSION_GRANTED
+      || ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+      ) != PackageManager.PERMISSION_GRANTED
+      || ContextCompat.checkSelfPermission(
+        this,
+        Manifest.permission.WAKE_LOCK
+      ) != PackageManager.PERMISSION_GRANTED
+    ) {
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        requestPermissions(
+          arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WAKE_LOCK
+          ), 100
+        )
       }
     }
   }
