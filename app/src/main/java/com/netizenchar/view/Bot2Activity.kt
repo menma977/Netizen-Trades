@@ -82,6 +82,10 @@ class Bot2Activity : AppCompatActivity() {
     thread.start()
   }
 
+  override fun onBackPressed() {
+    Toast.makeText(this, "Cannot Return When playing a bot", Toast.LENGTH_LONG).show()
+  }
+
   private fun onBotMode() {
     var time = System.currentTimeMillis()
     val trigger = Object()

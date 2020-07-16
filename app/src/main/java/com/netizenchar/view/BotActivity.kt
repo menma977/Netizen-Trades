@@ -89,6 +89,10 @@ class BotActivity : AppCompatActivity() {
     thread.start()
   }
 
+  override fun onBackPressed() {
+    Toast.makeText(this, "Cannot Return When playing a bot", Toast.LENGTH_LONG).show()
+  }
+
   private fun configChart() {
     series.color = getColor(R.color.colorAccent)
     cubicLineChart.axisTextColor = getColor(R.color.textPrimary)

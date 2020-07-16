@@ -158,63 +158,18 @@ class HomeActivity : AppCompatActivity() {
           response = WebController(body).execute().get()
           try {
             if (response["code"] == 200) {
-              if (response.getJSONObject("data")["Status"] == "0") {
-                runOnUiThread {
-                  goTo = Intent(applicationContext, BotActivity::class.java)
-                  goTo.putExtra("uniqueCode", uniqueCode)
-                  goTo.putExtra("balanceDoge", balanceValue)
-                  loading.closeDialog()
-                  startActivity(goTo)
-                }
-//                if (response.getJSONObject("data")["main"] == true) {
-//                  val oldBalanceData = BigDecimal(response.getJSONObject("data")["saldoawalmain"].toString(), MathContext.DECIMAL32)
-//                  uniqueCode = response.getJSONObject("data")["notrxlama"].toString()
-//                  val profit = balanceValue - ValueFormat().decimalToDoge(oldBalanceData)
-//                  runOnUiThread {
-//                    goTo = Intent(applicationContext, ResultActivity::class.java)
-//                    if (profit < BigDecimal(0)) {
-//                      goTo.putExtra("type", 0)
-//                      goTo.putExtra("status", "CUT LOSS")
-//                      goTo.putExtra("uniqueCode", uniqueCode)
-//                      goTo.putExtra("balanceStart", balanceValue)
-//                      goTo.putExtra("balanceEnd", ValueFormat().dogeToDecimal(oldBalanceData))
-//                    } else {
-//                      goTo.putExtra("type", 1)
-//                      goTo.putExtra("status", "WIN")
-//                      goTo.putExtra("uniqueCode", uniqueCode)
-//                      goTo.putExtra("balanceStart", balanceValue)
-//                      goTo.putExtra("balanceEnd", ValueFormat().dogeToDecimal(oldBalanceData))
-//                    }
-//                    runOnUiThread {
-//                      startActivity(goTo)
-//                      finish()
-//                      loading.closeDialog()
-//                    }
-//                  }
-//                } else {
-//                  runOnUiThread {
-//                    goTo = Intent(applicationContext, BotActivity::class.java)
-//                    goTo.putExtra("uniqueCode", uniqueCode)
-//                    goTo.putExtra("balanceDoge", balanceValue)
-//                    loading.closeDialog()
-//                    startActivity(goTo)
-//                  }
-//                }
-              } else {
-                runOnUiThread {
-                  Toast.makeText(
-                    applicationContext,
-                    "One day trading is only allowed once",
-                    Toast.LENGTH_LONG
-                  ).show()
-                  loading.closeDialog()
-                }
+              runOnUiThread {
+                goTo = Intent(applicationContext, BotActivity::class.java)
+                goTo.putExtra("uniqueCode", uniqueCode)
+                goTo.putExtra("balanceDoge", balanceValue)
+                loading.closeDialog()
+                startActivity(goTo)
               }
             } else {
               runOnUiThread {
                 Toast.makeText(
                   applicationContext,
-                  response["data"].toString(),
+                  response.getString("data"),
                   Toast.LENGTH_LONG
                 ).show()
                 loading.closeDialog()
@@ -251,67 +206,17 @@ class HomeActivity : AppCompatActivity() {
           try {
             response = WebController(body).execute().get()
             if (response["code"] == 200) {
-              if (response.getJSONObject("data")["Status"] == "0") {
-                runOnUiThread {
-                  goTo = Intent(applicationContext, Bot2Activity::class.java)
-                  goTo.putExtra("uniqueCode", uniqueCode)
-                  goTo.putExtra("balanceDoge", balanceValue)
-                  goTo.putExtra("targetLow", spinnerProbability.selectedItem.toString().toInt())
-                  loading.closeDialog()
-                  startActivity(goTo)
-                }
-//                if (response.getJSONObject("data")["main"] == true) {
-//                  val oldBalanceData = BigDecimal(response.getJSONObject("data")["saldoawalmain"].toString(), MathContext.DECIMAL32)
-//                  uniqueCode = response.getJSONObject("data")["notrxlama"].toString()
-//                  val profit = balanceValue - ValueFormat().decimalToDoge(oldBalanceData)
-//                  runOnUiThread {
-//                    goTo = Intent(applicationContext, ResultActivity::class.java)
-//                    if (profit < BigDecimal(0)) {
-//                      goTo.putExtra("type", 0)
-//                      goTo.putExtra("status", "CUT LOSS")
-//                      goTo.putExtra("uniqueCode", uniqueCode)
-//                      goTo.putExtra("balanceStart", balanceValue)
-//                      goTo.putExtra("balanceEnd", ValueFormat().dogeToDecimal(oldBalanceData))
-//                    } else {
-//                      goTo.putExtra("type", 1)
-//                      goTo.putExtra("status", "WIN")
-//                      goTo.putExtra("uniqueCode", uniqueCode)
-//                      goTo.putExtra("balanceStart", balanceValue)
-//                      goTo.putExtra("balanceEnd", ValueFormat().dogeToDecimal(oldBalanceData))
-//                    }
-//                    runOnUiThread {
-//                      startActivity(goTo)
-//                      finish()
-//                      loading.closeDialog()
-//                    }
-//                  }
-//                } else {
-//                  runOnUiThread {
-//                    goTo = Intent(applicationContext, Bot2Activity::class.java)
-//                    goTo.putExtra("uniqueCode", uniqueCode)
-//                    goTo.putExtra("balanceDoge", balanceValue)
-//                    goTo.putExtra("targetLow", spinnerProbability.selectedItem.toString().toInt())
-//                    loading.closeDialog()
-//                    startActivity(goTo)
-//                  }
-//                }
-              } else {
-                runOnUiThread {
-                  Toast.makeText(
-                    applicationContext,
-                    "One day trading is only allowed once",
-                    Toast.LENGTH_LONG
-                  ).show()
-                  loading.closeDialog()
-                }
+              runOnUiThread {
+                goTo = Intent(applicationContext, Bot2Activity::class.java)
+                goTo.putExtra("uniqueCode", uniqueCode)
+                goTo.putExtra("balanceDoge", balanceValue)
+                goTo.putExtra("targetLow", spinnerProbability.selectedItem.toString().toInt())
+                loading.closeDialog()
+                startActivity(goTo)
               }
             } else {
               runOnUiThread {
-                Toast.makeText(
-                  applicationContext,
-                  "Your connection is not stable to do the robot process. find a place that is more likely to run the robot",
-                  Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(applicationContext, response.getString("data"), Toast.LENGTH_LONG).show()
                 loading.closeDialog()
               }
             }

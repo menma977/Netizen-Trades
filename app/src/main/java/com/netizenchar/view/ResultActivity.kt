@@ -33,7 +33,6 @@ import kotlin.concurrent.schedule
 class ResultActivity : AppCompatActivity() {
   private lateinit var loading: Loading
   private lateinit var user: SessionUser
-  private lateinit var goTo: Intent
   private lateinit var valueFormat: ValueFormat
 
   private lateinit var statusView: TextView
@@ -62,7 +61,7 @@ class ResultActivity : AppCompatActivity() {
     description.text =
       "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments."
 
-//    sendDataToWeb()
+    sendDataToWeb()
     loading.closeDialog()
   }
 
@@ -73,7 +72,7 @@ class ResultActivity : AppCompatActivity() {
   }
 
   private fun sendDataToWeb() {
-    Timer().schedule(1000) {
+    Timer().schedule(100) {
       val body = HashMap<String, String>()
       body["a"] = "EndTrading1"
       body["usertrade"] = user.get("username")
@@ -81,28 +80,19 @@ class ResultActivity : AppCompatActivity() {
       body["notrx"] = intent.getSerializableExtra("uniqueCode").toString()
       body["status"] = intent.getSerializableExtra("status").toString()
       body["startbalance"] = valueFormat.decimalToDoge(startBalance).toPlainString()
-      body["ref"] = MD5().convert(
-        user.get("username") +
-            user.get("password") +
-            body["notrx"] +
-            body["status"] +
-            "balanceakhirb0d0nk111179"
-      )
+      body["ref"] = MD5().convert(user.get("username") + user.get("password") + body["notrx"] + body["status"] + "balanceakhirb0d0nk111179")
       response = WebController(body).execute().get()
       try {
         if (response["code"] == 200) {
-          if (response.getJSONObject("data")["Status"].toString() == "0") {
+          runOnUiThread {
             statusView.text = response.getJSONObject("data")["profit"].toString()
-            loading.closeDialog()
-          } else {
-            goTo = Intent(applicationContext, MainActivity::class.java)
-            startActivity(goTo)
-            finish()
             loading.closeDialog()
           }
         } else {
-          statusView.text = response["data"].toString()
-          loading.closeDialog()
+          runOnUiThread {
+            statusView.text = response["data"].toString()
+            loading.closeDialog()
+          }
         }
       } catch (e: Exception) {
         runOnUiThread {
