@@ -31,7 +31,7 @@ class HomeActivity : AppCompatActivity() {
   private lateinit var response: JSONObject
   private lateinit var balanceValue: BigDecimal
   private lateinit var logout: Button
-
+  private lateinit var email: TextView
   private lateinit var wallet: TextView
   private lateinit var balance: TextView
   private lateinit var copy: Button
@@ -41,14 +41,19 @@ class HomeActivity : AppCompatActivity() {
   private lateinit var refreshBalance: LinearLayout
   private lateinit var contentProbability: LinearLayout
   private lateinit var spinnerProbability: Spinner
+
+  private lateinit var uniqueCode: String
+
   private val body = HashMap<String, String>()
   private var limitDepositDefault = BigDecimal(0.000000000, MathContext.DECIMAL32).setScale(8, BigDecimal.ROUND_HALF_DOWN)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContentView(R.layout.activity_home)
 
     loading = Loading(this)
     sessionUser = SessionUser(this)
+    email = findViewById(R.id.textViewEmail)
     wallet = findViewById(R.id.textViewWallet)
     balance = findViewById(R.id.textViewBalance)
     copy = findViewById(R.id.buttonCopy)
@@ -61,6 +66,7 @@ class HomeActivity : AppCompatActivity() {
     spinnerProbability = findViewById(R.id.spinnerProbability)
     loading.openDialog()
 
+    email.text = sessionUser.get("usernameWeb")
     wallet.text = sessionUser.get("wallet")
 
     generateProbability(spinnerProbability)
@@ -94,9 +100,9 @@ class HomeActivity : AppCompatActivity() {
     }
 
     botWeb.setOnClickListener {
-      val uniqueCode = UUID.randomUUID().toString()
+      uniqueCode = UUID.randomUUID().toString()
       loading.openDialog()
-      body["a"] = "StartTrading1"
+      body["a"] = "StartTradingWeb"
       body["usertrade"] = sessionUser.get("username")
       body["passwordtrade"] = sessionUser.get("password")
       body["notrx"] = uniqueCode
@@ -138,7 +144,7 @@ class HomeActivity : AppCompatActivity() {
     }
 
     botFibonacci.setOnClickListener {
-      val uniqueCode = UUID.randomUUID().toString()
+      uniqueCode = UUID.randomUUID().toString()
       loading.openDialog()
       if (ValueFormat().decimalToDoge(balanceValue) < BigDecimal(10000)) {
         Toast.makeText(
@@ -148,7 +154,7 @@ class HomeActivity : AppCompatActivity() {
         ).show()
         loading.closeDialog()
       } else {
-        body["a"] = "StartTrading"
+        body["a"] = "StartTrading1"
         body["usertrade"] = sessionUser.get("username")
         body["passwordtrade"] = sessionUser.get("password")
         body["notrx"] = uniqueCode
@@ -167,11 +173,7 @@ class HomeActivity : AppCompatActivity() {
               }
             } else {
               runOnUiThread {
-                Toast.makeText(
-                  applicationContext,
-                  response.getString("data"),
-                  Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(applicationContext, response.getString("data"), Toast.LENGTH_LONG).show()
                 loading.closeDialog()
               }
             }
@@ -196,7 +198,7 @@ class HomeActivity : AppCompatActivity() {
         ).show()
         loading.closeDialog()
       } else {
-        body["a"] = "StartTrading"
+        body["a"] = "StartTrading2"
         body["usertrade"] = sessionUser.get("username")
         body["passwordtrade"] = sessionUser.get("password")
         body["notrx"] = uniqueCode
@@ -251,15 +253,13 @@ class HomeActivity : AppCompatActivity() {
       response = DogeController(body).execute().get()
       if (response["code"] == 200) {
         balanceValue = response.getJSONObject("data")["Balance"].toString().toBigDecimal()
-        val balanceLimit = when {
-          sessionUser.get("limitDeposit").isEmpty() -> {
-            ValueFormat().dogeToDecimal(limitDepositDefault)
-          }
-          else -> {
-            ValueFormat().dogeToDecimal(sessionUser.get("limitDeposit").toBigDecimal())
-          }
+        val balanceLimit = if (sessionUser.get("limitDeposit").isEmpty()) {
+          ValueFormat().dogeToDecimal(limitDepositDefault)
+        } else {
+          ValueFormat().dogeToDecimal(sessionUser.get("limitDeposit").toBigDecimal())
         }
-        if (ValueFormat().decimalToDoge(balanceValue) > BigDecimal(0) && balanceValue < balanceLimit) {
+
+        if (ValueFormat().decimalToDoge(balanceValue) >= BigDecimal(10000) && balanceValue <= balanceLimit) {
           runOnUiThread {
             balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE"
             botFibonacci.visibility = Button.VISIBLE

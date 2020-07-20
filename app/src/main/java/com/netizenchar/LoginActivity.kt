@@ -77,13 +77,14 @@ class LoginActivity : AppCompatActivity() {
     loading.openDialog()
     val body = HashMap<String, String>()
     body["a"] = "LoginSession"
-    body["email"] = email
+    body["username"] = email
     body["password"] = password
     body["ref"] = MD5().convert(email + password + "b0d0nk111179")
     Timer().schedule(100) {
       response = WebController(body).execute().get()
       runOnUiThread {
         if (response["code"] == 200) {
+          sessionUser.set("usernameWeb", email)
           sessionUser.set("wallet", response.getJSONObject("data")["walletdepo"].toString())
           sessionUser.set("limitDeposit", response.getJSONObject("data")["maxdepo"].toString())
           val usernameDoge = response.getJSONObject("data")["userdoge"].toString()

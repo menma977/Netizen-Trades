@@ -62,13 +62,13 @@ class ResultActivity : AppCompatActivity() {
       "We will return your capital and trading profit or the remaining cut loss from your capital to your doge wallet in a few moments."
 
     sendDataToWeb()
-    loading.closeDialog()
   }
 
   override fun onBackPressed() {
     super.onBackPressed()
     val goTo = Intent(this, MainActivity::class.java)
     startActivity(goTo)
+    finish()
   }
 
   private fun sendDataToWeb() {
@@ -82,8 +82,9 @@ class ResultActivity : AppCompatActivity() {
       body["startbalance"] = valueFormat.decimalToDoge(startBalance).toPlainString()
       body["ref"] = MD5().convert(user.get("username") + user.get("password") + body["notrx"] + body["status"] + "balanceakhirb0d0nk111179")
       response = WebController(body).execute().get()
+      println(response)
       try {
-        if (response["code"] == 200) {
+        if (response.getInt("code") == 200) {
           runOnUiThread {
             statusView.text = response.getJSONObject("data")["profit"].toString()
             loading.closeDialog()
@@ -97,6 +98,7 @@ class ResultActivity : AppCompatActivity() {
       } catch (e: Exception) {
         runOnUiThread {
           Toast.makeText(applicationContext, e.message, Toast.LENGTH_LONG).show()
+          loading.closeDialog()
         }
       }
     }

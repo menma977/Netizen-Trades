@@ -28,6 +28,9 @@ class WebController(private var body: HashMap<String, String>) : AsyncTask<Void,
           val input = BufferedReader(InputStreamReader(response.body!!.byteStream()))
           val inputData: String = input.readLine()
           val convertJSON = JSONObject(inputData)
+          println("=========================================")
+          println(convertJSON)
+          println("=========================================")
           when {
             convertJSON["Status"] == "1" -> {
               JSONObject().put("code", 500).put("data", convertJSON["Pesan"])

@@ -41,7 +41,7 @@ class Bot2Activity : AppCompatActivity() {
 
   private var rowChart = 0
   private var loseBot = false
-  private var balanceLimitTarget = BigDecimal(0.05)
+  private var balanceLimitTarget = BigDecimal(0.06)
   private var balanceLimitTargetLow = BigDecimal(0)
   private var seed = (0..99999).random().toString()
   private var thread = Thread()
@@ -150,26 +150,19 @@ class Bot2Activity : AppCompatActivity() {
           }
         }
       }
+
+      goTo = Intent(applicationContext, ResultActivity::class.java)
       if (balanceRemaining >= balanceTarget) {
-        runOnUiThread {
-          goTo = Intent(applicationContext, ResultActivity::class.java)
-          goTo.putExtra("status", "WIN")
-          goTo.putExtra("startBalance", balance)
-          goTo.putExtra("endBalance", balanceRemaining)
-          goTo.putExtra("uniqueCode", intent.getSerializableExtra("uniqueCode").toString())
-          startActivity(goTo)
-          finish()
-        }
+        goTo.putExtra("status", "WIN")
       } else {
-        runOnUiThread {
-          goTo = Intent(applicationContext, ResultActivity::class.java)
-          goTo.putExtra("status", "CUT LOSS")
-          goTo.putExtra("startBalance", balance)
-          goTo.putExtra("endBalance", balanceRemaining)
-          goTo.putExtra("uniqueCode", intent.getSerializableExtra("uniqueCode").toString())
-          startActivity(goTo)
-          finish()
-        }
+        goTo.putExtra("status", "CUT LOSS")
+      }
+      goTo.putExtra("startBalance", balance)
+      goTo.putExtra("balanceRemaining", balanceRemaining)
+      goTo.putExtra("uniqueCode", intent.getSerializableExtra("uniqueCode").toString())
+      runOnUiThread {
+        startActivity(goTo)
+        finish()
       }
     }
   }

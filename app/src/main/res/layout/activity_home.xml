@@ -108,14 +108,28 @@
 
     <Space
         android:layout_width="match_parent"
-        android:layout_height="10dp"/>
+        android:layout_height="5dp"/>
+
+    <TextView
+        android:text="@string/email"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textViewEmail"/>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="5dp"/>
 
     <LinearLayout
         android:id="@+id/linearLayoutRefreshBalance"
         android:background="@drawable/card_primary"
         android:layout_marginTop="5dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="5dp"
         android:padding="15dp"
         android:elevation="5dp"
