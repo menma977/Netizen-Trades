@@ -25,4 +25,5 @@
   <string name="risk">Risk</string>
   <string name="please_wait">Please wait</string>
   <string name="bot_web">Bot C</string>
+  <string name="minimum">Minimum : 10000.00000000 DOGE</string>
 </resources>

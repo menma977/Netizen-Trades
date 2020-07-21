@@ -34,6 +34,7 @@ class HomeActivity : AppCompatActivity() {
   private lateinit var email: TextView
   private lateinit var wallet: TextView
   private lateinit var balance: TextView
+  private lateinit var maxDeposit: TextView
   private lateinit var copy: Button
   private lateinit var botFibonacci: Button
   private lateinit var botProbability: Button
@@ -56,6 +57,7 @@ class HomeActivity : AppCompatActivity() {
     email = findViewById(R.id.textViewEmail)
     wallet = findViewById(R.id.textViewWallet)
     balance = findViewById(R.id.textViewBalance)
+    maxDeposit = findViewById(R.id.textViewMaxDeposit)
     copy = findViewById(R.id.buttonCopy)
     botFibonacci = findViewById(R.id.buttonBotFibonacci)
     botProbability = findViewById(R.id.buttonBotModeProbability)
@@ -258,6 +260,7 @@ class HomeActivity : AppCompatActivity() {
         } else {
           ValueFormat().dogeToDecimal(sessionUser.get("limitDeposit").toBigDecimal())
         }
+        maxDeposit.text = "Maximum : ${ValueFormat().decimalToDoge(balanceLimit)} DOGE"
 
         if (ValueFormat().decimalToDoge(balanceValue) >= BigDecimal(10000) && balanceValue <= balanceLimit) {
           runOnUiThread {
@@ -267,9 +270,9 @@ class HomeActivity : AppCompatActivity() {
             botWeb.visibility = Button.GONE
             loading.closeDialog()
           }
-        } else if (balanceValue < balanceLimit) {
+        } else if (balanceValue > balanceLimit) {
           runOnUiThread {
-            balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE"
+            balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE too High"
             botFibonacci.visibility = Button.GONE
             contentProbability.visibility = LinearLayout.GONE
             botWeb.visibility = Button.GONE

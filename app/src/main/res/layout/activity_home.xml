@@ -110,15 +110,52 @@
         android:layout_width="match_parent"
         android:layout_height="5dp"/>
 
-    <TextView
-        android:text="@string/email"
-        android:gravity="center"
-        android:textColor="@color/colorPrimary"
-        android:textSize="15sp"
-        android:textStyle="bold"
+    <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/textViewEmail"/>
+        android:gravity="center"
+        android:background="@drawable/card_primary"
+        android:layout_margin="10dp"
+        android:padding="10dp"
+        android:elevation="10dp">
+
+      <TextView
+          android:text="@string/email"
+          android:gravity="center"
+          android:textColor="@color/colorPrimary"
+          android:textSize="15sp"
+          android:textStyle="bold"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/textViewEmail"/>
+
+      <Space
+          android:layout_width="match_parent"
+          android:layout_height="5dp"/>
+
+      <TextView
+          android:text="@string/minimum"
+          android:gravity="start"
+          android:textColor="@color/textPrimary"
+          android:textSize="15sp"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"/>
+
+      <Space
+          android:layout_width="match_parent"
+          android:layout_height="5dp"/>
+
+      <TextView
+          android:text="@string/minimum"
+          android:gravity="start"
+          android:textColor="@color/textPrimary"
+          android:textSize="15sp"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/textViewMaxDeposit"/>
+
+    </LinearLayout>
 
     <Space
         android:layout_width="match_parent"
