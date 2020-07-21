@@ -267,9 +267,9 @@ class HomeActivity : AppCompatActivity() {
             botWeb.visibility = Button.GONE
             loading.closeDialog()
           }
-        } else if (balanceValue > balanceLimit) {
+        } else if (balanceValue < balanceLimit) {
           runOnUiThread {
-            balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE too high"
+            balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE"
             botFibonacci.visibility = Button.GONE
             contentProbability.visibility = LinearLayout.GONE
             botWeb.visibility = Button.GONE
