@@ -268,6 +268,7 @@ class HomeActivity : AppCompatActivity() {
             botFibonacci.visibility = Button.VISIBLE
             contentProbability.visibility = LinearLayout.VISIBLE
             botWeb.visibility = Button.GONE
+
             loading.closeDialog()
           }
         } else if (balanceValue > balanceLimit) {
