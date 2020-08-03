@@ -82,7 +82,6 @@ class ResultActivity : AppCompatActivity() {
       body["startbalance"] = valueFormat.decimalToDoge(startBalance).toPlainString()
       body["ref"] = MD5().convert(user.get("username") + user.get("password") + body["notrx"] + body["status"] + "balanceakhirb0d0nk111179")
       response = WebController(body).execute().get()
-      println(response)
       try {
         if (response.getInt("code") == 200) {
           runOnUiThread {

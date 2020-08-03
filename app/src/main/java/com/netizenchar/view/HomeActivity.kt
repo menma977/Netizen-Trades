@@ -170,6 +170,7 @@ class HomeActivity : AppCompatActivity() {
                 goTo = Intent(applicationContext, BotActivity::class.java)
                 goTo.putExtra("uniqueCode", uniqueCode)
                 goTo.putExtra("balanceDoge", balanceValue)
+                goTo.putExtra("target", response.getJSONObject("data").getDouble("persen").div(100).toBigDecimal())
                 loading.closeDialog()
                 startActivity(goTo)
               }
@@ -215,6 +216,7 @@ class HomeActivity : AppCompatActivity() {
                 goTo.putExtra("uniqueCode", uniqueCode)
                 goTo.putExtra("balanceDoge", balanceValue)
                 goTo.putExtra("targetLow", spinnerProbability.selectedItem.toString().toInt())
+                goTo.putExtra("target", response.getJSONObject("data").getDouble("persen").div(100).toBigDecimal())
                 loading.closeDialog()
                 startActivity(goTo)
               }

@@ -64,13 +64,12 @@ class BotActivity : AppCompatActivity() {
     cubicLineChart = findViewById(R.id.cubicLineChart)
     series = ValueLineSeries()
 
-    uniqueCode = intent.getSerializableExtra("uniqueCode").toString()
-
     cubicLineChart = findViewById(R.id.cubicLineChart)
     series = ValueLineSeries()
 
     loading.openDialog()
     balance = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
+    balanceLimitTarget = intent.getSerializableExtra("target") as BigDecimal
     balanceLimitTargetLow = BigDecimal(0).multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
     balanceRemaining = balance
     balanceTarget = valueFormat.dogeToDecimal(valueFormat.decimalToDoge((balance * balanceLimitTarget) + balance))

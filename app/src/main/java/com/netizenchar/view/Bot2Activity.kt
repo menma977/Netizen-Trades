@@ -63,6 +63,7 @@ class Bot2Activity : AppCompatActivity() {
 
     loading.openDialog()
     balance = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
+    balanceLimitTarget = intent.getSerializableExtra("target") as BigDecimal
     val calculateLimitLow = intent.getSerializableExtra("targetLow").toString().toBigDecimal()
       .multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
     balanceLimitTargetLow = valueFormat.decimalToDoge(balance) * calculateLimitLow
