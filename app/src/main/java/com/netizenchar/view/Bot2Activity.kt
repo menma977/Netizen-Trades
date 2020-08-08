@@ -42,7 +42,6 @@ class Bot2Activity : AppCompatActivity() {
   private var rowChart = 0
   private var loseBot = false
   private var balanceLimitTarget = BigDecimal(0.06)
-  private var balanceLimitTargetLow = BigDecimal(0)
   private var seed = (0..99999).random().toString()
   private var thread = Thread()
   private var formula = 1
@@ -64,13 +63,9 @@ class Bot2Activity : AppCompatActivity() {
     loading.openDialog()
     balance = intent.getSerializableExtra("balanceDoge").toString().toBigDecimal()
     balanceLimitTarget = intent.getSerializableExtra("target") as BigDecimal
-    val calculateLimitLow = intent.getSerializableExtra("targetLow").toString().toBigDecimal()
-      .multiply(BigDecimal(0.01)).setScale(2, BigDecimal.ROUND_HALF_DOWN)
-    balanceLimitTargetLow = valueFormat.decimalToDoge(balance) * calculateLimitLow
     balanceRemaining = balance
     balanceTarget = valueFormat.dogeToDecimal(valueFormat.decimalToDoge((balance * balanceLimitTarget) + balance))
     payIn = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) * BigDecimal(0.001))
-    balanceLimitTargetLow = valueFormat.dogeToDecimal(valueFormat.decimalToDoge(balance) - balanceLimitTargetLow)
 
     balanceView.text = valueFormat.decimalToDoge(balance).toPlainString()
 
@@ -91,7 +86,7 @@ class Bot2Activity : AppCompatActivity() {
     var time = System.currentTimeMillis()
     val trigger = Object()
     synchronized(trigger) {
-      while (balanceRemaining in balanceLimitTargetLow..balanceTarget) {
+      while (balanceRemaining in (0).toBigDecimal()..balanceTarget) {
         val delta = System.currentTimeMillis() - time
         if (delta >= 1000) {
           time = System.currentTimeMillis()

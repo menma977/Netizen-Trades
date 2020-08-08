@@ -4,9 +4,14 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.support.design.widget.FloatingActionButton
 import android.support.v7.app.AppCompatActivity
-import android.widget.*
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
+import android.widget.Toast
 import com.netizenchar.MainActivity
 import com.netizenchar.R
 import com.netizenchar.config.Loading
@@ -16,11 +21,11 @@ import com.netizenchar.controller.DogeController
 import com.netizenchar.controller.WebController
 import com.netizenchar.model.SessionUser
 import org.json.JSONObject
-import java.lang.Exception
 import java.math.BigDecimal
 import java.math.MathContext
 import java.util.*
 import kotlin.concurrent.schedule
+
 
 class HomeActivity : AppCompatActivity() {
   private lateinit var clipboardManager: ClipboardManager
@@ -40,8 +45,7 @@ class HomeActivity : AppCompatActivity() {
   private lateinit var botProbability: Button
   private lateinit var botWeb: Button
   private lateinit var refreshBalance: LinearLayout
-  private lateinit var contentProbability: LinearLayout
-  private lateinit var spinnerProbability: Spinner
+  private lateinit var callWhatsApp: FloatingActionButton
 
   private lateinit var uniqueCode: String
 
@@ -64,14 +68,11 @@ class HomeActivity : AppCompatActivity() {
     botWeb = findViewById(R.id.buttonBotWeb)
     logout = findViewById(R.id.logoutButton)
     refreshBalance = findViewById(R.id.linearLayoutRefreshBalance)
-    contentProbability = findViewById(R.id.linearLayoutProbability)
-    spinnerProbability = findViewById(R.id.spinnerProbability)
+    callWhatsApp = findViewById(R.id.floatingActionButtonCall)
     loading.openDialog()
 
     email.text = sessionUser.get("usernameWeb")
     wallet.text = sessionUser.get("wallet")
-
-    generateProbability(spinnerProbability)
 
 
     copy.setOnClickListener {
@@ -215,7 +216,6 @@ class HomeActivity : AppCompatActivity() {
                 goTo = Intent(applicationContext, Bot2Activity::class.java)
                 goTo.putExtra("uniqueCode", uniqueCode)
                 goTo.putExtra("balanceDoge", balanceValue)
-                goTo.putExtra("targetLow", spinnerProbability.selectedItem.toString().toInt())
                 goTo.putExtra("target", response.getJSONObject("data").getDouble("persen").div(100).toBigDecimal())
                 loading.closeDialog()
                 startActivity(goTo)
@@ -233,6 +233,17 @@ class HomeActivity : AppCompatActivity() {
             }
           }
         }
+      }
+    }
+
+    callWhatsApp.setOnClickListener {
+      try {
+        val uri = Uri.parse("https://api.whatsapp.com/send?phone=+6281232459859&text=Hai Admin ")
+        val waIntent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(waIntent)
+      } catch (e: Exception) {
+        println(e.message)
+        Toast.makeText(this, "WhatsApp not Installed . ${e.message}", Toast.LENGTH_LONG).show()
       }
     }
 
@@ -268,7 +279,7 @@ class HomeActivity : AppCompatActivity() {
           runOnUiThread {
             balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE"
             botFibonacci.visibility = Button.VISIBLE
-            contentProbability.visibility = LinearLayout.VISIBLE
+            botProbability.visibility = Button.VISIBLE
             botWeb.visibility = Button.GONE
 
             loading.closeDialog()
@@ -277,7 +288,7 @@ class HomeActivity : AppCompatActivity() {
           runOnUiThread {
             balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE too High"
             botFibonacci.visibility = Button.GONE
-            contentProbability.visibility = LinearLayout.GONE
+            botProbability.visibility = Button.GONE
             botWeb.visibility = Button.GONE
             Toast.makeText(
               applicationContext,
@@ -291,12 +302,12 @@ class HomeActivity : AppCompatActivity() {
           runOnUiThread {
             balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE too low"
             botFibonacci.visibility = Button.GONE
-            contentProbability.visibility = LinearLayout.GONE
+            botProbability.visibility = Button.GONE
             botWeb.visibility = Button.GONE
             Toast.makeText(
               applicationContext,
               "has no remaining balance",
-              Toast.LENGTH_LONG
+              Toast.LENGTH_SHORT
             ).show()
             loading.closeDialog()
           }
@@ -310,20 +321,11 @@ class HomeActivity : AppCompatActivity() {
             Toast.LENGTH_LONG
           ).show()
           botFibonacci.visibility = Button.GONE
-          contentProbability.visibility = LinearLayout.GONE
+          botProbability.visibility = Button.GONE
           botWeb.visibility = Button.GONE
           loading.closeDialog()
         }
       }
     }
-  }
-
-  private fun generateProbability(spinner: Spinner) {
-    val spinnerAdapter = ArrayAdapter<Int>(this, android.R.layout.simple_spinner_item)
-    for (i in 3..10) {
-      spinnerAdapter.add(i * 10)
-    }
-    spinner.adapter = spinnerAdapter
-    spinner.setSelection(7)
   }
 }
