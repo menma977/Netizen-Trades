@@ -88,7 +88,6 @@ class HomeActivity : AppCompatActivity() {
 
     refreshBalance.setOnClickListener {
       getBalance()
-      botWeb.visibility = Button.GONE
     }
 
     logout.setOnClickListener {
@@ -248,7 +247,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     getBalance()
-    botWeb.visibility = Button.GONE
   }
 
   override fun onStart() {
@@ -280,7 +278,7 @@ class HomeActivity : AppCompatActivity() {
             balance.text = "Balance : ${ValueFormat().decimalToDoge(balanceValue).toPlainString()} DOGE"
             botFibonacci.visibility = Button.VISIBLE
             botProbability.visibility = Button.VISIBLE
-            botWeb.visibility = Button.GONE
+            botWeb.visibility = Button.VISIBLE
 
             loading.closeDialog()
           }

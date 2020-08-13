@@ -58,7 +58,8 @@
           android:layout_width="match_parent"
           android:layout_height="20dp"
           android:id="@+id/progressBar"
-          android:progressDrawable="@drawable/progress_bar"/>
+          android:progressDrawable="@drawable/progress_bar"
+          android:max="10"/>
 
     </LinearLayout>
 

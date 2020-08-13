@@ -3,10 +3,9 @@ package com.netizenchar.model
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import org.json.JSONObject
 
 @SuppressLint("CommitPrefEdits")
-class SessionUser (context: Context) {
+class SessionUser(context: Context) {
   private val sharedPreferences: SharedPreferences
   private val sharedPreferencesEditor: SharedPreferences.Editor
 
@@ -19,12 +18,12 @@ class SessionUser (context: Context) {
     sharedPreferencesEditor = sharedPreferences.edit()
   }
 
-  fun set(id: String, value:String) {
+  fun set(id: String, value: String) {
     sharedPreferencesEditor.putString(id, value)
     sharedPreferencesEditor.commit()
   }
 
-  fun get(id: String) : String {
+  fun get(id: String): String {
     return sharedPreferences.getString(id, "")!!
   }
 

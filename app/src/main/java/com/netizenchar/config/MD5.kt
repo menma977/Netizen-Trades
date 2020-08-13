@@ -4,7 +4,7 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
 class MD5 {
-  fun convert(input : String) : String {
+  fun convert(input: String): String {
     val md5 = "MD5"
     try {
       // Create MD5 Hash
