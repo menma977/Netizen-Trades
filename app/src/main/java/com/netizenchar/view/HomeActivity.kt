@@ -78,7 +78,7 @@ class HomeActivity : AppCompatActivity() {
     copy.setOnClickListener {
       clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
       clipData = ClipData.newPlainText("Wallet", wallet.text.toString())
-      clipboardManager.primaryClip = clipData
+      clipboardManager.setPrimaryClip(clipData)
       Toast.makeText(
         applicationContext,
         "Doge wallet has been copied",
